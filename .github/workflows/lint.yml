@@ -23,15 +23,15 @@ jobs:
         pip install -r requirements-dev.txt
         
     - name: Check formatting with black
-      run: black --check kybra_simple_db tests
+      run: black --check kybra_simple_logging tests
       
     - name: Check imports with isort
-      run: isort --check-only kybra_simple_db tests
+      run: isort --check-only kybra_simple_logging tests
       
     - name: Lint with flake8
       run: |
-        flake8 kybra_simple_db --ignore=E501,W391,W503,F405,F403
+        flake8 kybra_simple_logging --ignore=E501,W391,W503,F405,F403
         flake8 tests/src --ignore=E501,W391,W503,F405,F403,F401
       
     - name: Type check with mypy
-      run: mypy kybra_simple_db tests
+      run: mypy kybra_simple_logging tests

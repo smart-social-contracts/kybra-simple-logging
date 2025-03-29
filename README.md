@@ -18,11 +18,11 @@ final cleaning
     remove printouts, TODO, etc.
 RELEASE!
 
-[![Test](https://github.com/Batou125/kybra_simple_db/actions/workflows/test.yml/badge.svg)](https://github.com/Batou125/kybra_simple_db/actions/workflows/test.yml)
+[![Test](https://github.com/Batou125/kybra_simple_logging/actions/workflows/test.yml/badge.svg)](https://github.com/Batou125/kybra_simple_logging/actions/workflows/test.yml)
 [![PyPI version](https://badge.fury.io/py/kybra-simple-db.svg)](https://badge.fury.io/py/kybra-simple-db)
 [![Python Versions](https://img.shields.io/pypi/pyversions/kybra-simple-db.svg)](https://pypi.org/project/kybra-simple-db/)
-[![Coverage](https://codecov.io/gh/Batou125/kybra_simple_db/branch/main/graph/badge.svg)](https://codecov.io/gh/Batou125/kybra_simple_db)
-[![License](https://img.shields.io/github/license/Batou125/kybra_simple_db.svg)](https://github.com/Batou125/kybra_simple_db/blob/main/LICENSE)
+[![Coverage](https://codecov.io/gh/Batou125/kybra_simple_logging/branch/main/graph/badge.svg)](https://codecov.io/gh/Batou125/kybra_simple_logging)
+[![License](https://img.shields.io/github/license/Batou125/kybra_simple_logging.svg)](https://github.com/Batou125/kybra_simple_logging/blob/main/LICENSE)
 
 A lightweight key-value database with entity relationships and audit logging capabilities, intended for small to medium-sized applications running on the Internet Computer using Kybra.
 
@@ -39,7 +39,7 @@ from kybra import StableBTreeMap
 db_storage  = StableBTreeMap[str, str](memory_id=..., max_key_size=..., max_value_size=...)
 
 # Step 2: Import Kybra Simple DB and initialize database
-from kybra_simple_db import *
+from kybra_simple_logging import *
 Database(db_storage)
 
 # Step 3: Run your application using the database
@@ -89,7 +89,7 @@ To run the test suite:
 ```bash
 pip install -r requirements-dev.txt
 python -m pytest -v
-python -m pylint kybra_simple_db tests
+python -m pylint kybra_simple_logging tests
 ```
 
 
@@ -97,8 +97,8 @@ python -m pylint kybra_simple_db tests
 
 ```bash
 # Clone the repository
-git clone https://github.com/smart-social-contracts/kybra_simple_db.git
-cd kybra_simple_db
+git clone https://github.com/smart-social-contracts/kybra_simple_logging.git
+cd kybra_simple_logging
 
 # Recommended steps
 pip install pyenv virtualenv
