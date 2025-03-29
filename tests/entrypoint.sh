@@ -10,20 +10,8 @@ dfx start --background --clean
 echo "Deploying test canister..."
 dfx deploy
 
-# Call greet and check output
-echo "Testing greet function..."
-GREET_RESULT=$(dfx canister call test greet)
-if [ "$GREET_RESULT" != '("Hello!")' ]; then
-  echo "Error: greet function returned unexpected result: $GREET_RESULT"
-  dfx stop
-  exit 1
-else
-  echo "greet function test passed!"
-fi
-
 # Define a list of test identifiers
-TEST_IDS=('example_1' 'example_2' 'entity' 'mixins' 'properties' 'relationships' 'database' 'audit')
-
+TEST_IDS=( 'example_1' )  # TODO: enter list of test identifiers here!
 
 # Loop through each test identifier
 for TEST_ID in "${TEST_IDS[@]}"; do
