@@ -1,9 +1,7 @@
 from kybra import ic, query, update
 
 # Import and expose all the test functions
-from tests import (
-    test_functions
-)
+from tests import test_functions
 
 
 @query

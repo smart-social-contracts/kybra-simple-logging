@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kybra_simple_logging"
-version = "0.1.1"
-description = "A lightweight key-value database written in Python, intended for use with Kybra on the Internet Computer (IC)"
+version = "0.0.1"
+description = "A lightweight logging library for Kybra on the Internet Computer (IC)"
 readme = "README.md"
 authors = [
     { name = "Smart Social Contracts", email = "smartsocialcontracts@gmail.com" }
@@ -27,8 +27,8 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/smart-social-contracts/kybra_simple_logging"
-Repository = "https://github.com/smart-social-contracts/kybra-simple-db.git"
-Issues = "https://github.com/smart-social-contracts/kybra-simple-db/issues"
+Repository = "https://github.com/smart-social-contracts/kybra-simple-logging.git"
+Issues = "https://github.com/smart-social-contracts/kybra-simple-logging/issues"
 
 [tool.setuptools]
 packages = ["kybra_simple_logging"]

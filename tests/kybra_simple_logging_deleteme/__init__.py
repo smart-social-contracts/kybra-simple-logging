@@ -1,9 +1,9 @@
 from ._handler import (
-    logger,
-    get_logger,
-    set_log_level,
+    LogLevel,
+    SimpleLogger,
     disable_logging,
     enable_logging,
-    SimpleLogger,
-    LogLevel
+    get_logger,
+    logger,
+    set_log_level,
 )
