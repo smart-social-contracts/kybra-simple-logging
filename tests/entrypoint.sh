@@ -4,7 +4,9 @@ set -x
 
 # Start dfx in the background
 echo "Starting dfx..."
-dfx start --background --clean
+dfx start --clean > log.txt 2>&1 &
+
+sleep 10
 
 # Deploy the test canister
 echo "Deploying test canister..."
@@ -16,14 +18,21 @@ TEST_IDS=( 'example_1' )  # TODO: enter list of test identifiers here!
 # Loop through each test identifier
 for TEST_ID in "${TEST_IDS[@]}"; do
   echo "Testing test_${TEST_ID} module..."
-  TEST_RESULT=$(dfx canister call test run_test ${TEST_ID})
-  if [ "$TEST_RESULT" != '(0 : int)' ]; then
+  dfx canister call test run_test ${TEST_ID}
+
+  sleep 2
+  cd src
+  PYTHONPATH=. python tests/test_example_1.py basic_logging
+  TEST_RESULT=$?
+
+  if [ "$TEST_RESULT" != '0' ]; then
     echo "Error: test_${TEST_ID}.run() function returned unexpected result: $TEST_RESULT"
     dfx stop
     exit 1
   else
     echo "test_${TEST_ID}.run() function test passed!"
   fi
+
 done
 
 echo "Stopping dfx..."
