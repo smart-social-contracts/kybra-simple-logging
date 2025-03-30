@@ -1,10 +1,14 @@
-# Import the kybra_simple_logging module
+
+try:
+    from kybra import ic
+except:
+    pass
+
+from kybra_simple_logging import logger, get_logger, set_log_level, disable_logging, enable_logging
 from tests.utils import extract_between
 
-def run_basic_logging():
-    from kybra import ic
-    from kybra_simple_logging import logger, get_logger, set_log_level, disable_logging, enable_logging
 
+def test_basic_logging():
     ic.print('START basic_logging')
     logger.debug("[TEST-BASIC] Debug message")
     logger.info("[TEST-BASIC] Info message")
@@ -12,19 +16,18 @@ def run_basic_logging():
     logger.error("[TEST-BASIC] Error message")
     logger.critical("[TEST-BASIC] Critical message")
     ic.print('END basic_logging')
+    return 0
 
 
 def assert_basic_logging():
     logs = open("/app/log.txt").read()
-    print('*************')
-    print(logs)
-    print('*************')
     logs = extract_between(logs, 'START basic_logging', 'END basic_logging')
     assert "[TEST-BASIC] Debug message" not in logs
     assert "[TEST-BASIC] Info message" in logs
     assert "[TEST-BASIC] Warning message" in logs
     assert "[TEST-BASIC] Error message" in logs
     assert "[TEST-BASIC] Critical message" in logs
+    return 0
 
 
 # def test_named_loggers() -> str:
@@ -90,13 +93,8 @@ def assert_basic_logging():
 #     return "Completed disable/enable test"
 
 
-def run() -> int:
-    run_basic_logging()
-    # test_named_loggers()
-    # test_level_filtering()
-    # test_global_level()
-    # test_disable_enable()
-    return 0
+def run_test(function_name: str) -> int:
+    return globals()[f"test_{function_name}"]()
 
 
 def run_assert(function_name: str) -> int:
