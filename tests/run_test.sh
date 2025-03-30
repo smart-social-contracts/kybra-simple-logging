@@ -8,29 +8,20 @@ cd src
 
 exit_code=0
 
-TEST_IDS=("example_1")
+TEST_IDS=("basic_logging" "named_loggers" "level_filtering" "global_level" "disable_enable")
 
-# Check if a specific test ID is provided as an argument
-if [ "$1" ]; then
-  if [[ " ${TEST_IDS[@]} " =~ " $1 " ]]; then
-    echo "Running test $1..."
-    PYTHONPATH="..:." python tests/test_$1.py || exit_code=1
-    exit $exit_code
-  else
-    echo "Invalid test ID: $1"
-    echo "Valid test IDs are: ${TEST_IDS[@]}"
-    exit 1
-  fi
-fi
 
 for TEST_ID in "${TEST_IDS[@]}"; do
-  PYTHONPATH="../..:." python tests/test_${TEST_ID}.py || exit_code=1
+  echo "Testing test_${TEST_ID} function..."
+  
+  PYTHONPATH=".:../.." python tests/test_functions.py test ${TEST_ID}
+  PYTHONPATH=".:../.." python tests/test_functions.py assert ${TEST_ID}
+  
+  TEST_RESULT=$?
+  if [ $TEST_RESULT -ne 0 ]; then
+    exit_code=1
+    echo "Test ${TEST_ID} failed with exit code ${TEST_RESULT}"
+  fi
 done
-
-if [ $exit_code -eq 0 ]; then
-  echo -e "\033[0;32mAll tests passed successfully!\033[0m"
-else
-  echo -e "\033[0;31mSome tests failed. Please check the logs.\033[0m"
-fi
 
 exit $exit_code

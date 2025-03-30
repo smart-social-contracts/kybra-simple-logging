@@ -1,0 +1,5 @@
+START basic_logging
+[INFO] [kybra_simple_logging] [TEST-BASIC] Info message
+[ERROR] [kybra_simple_logging] [TEST-BASIC] Error message
+[CRITICAL] [kybra_simple_logging] [TEST-BASIC] Critical message
+END basic_logging

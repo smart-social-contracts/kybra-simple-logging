@@ -39,7 +39,8 @@ try:
         
     except Exception as e:
         # If we get an error trying to use ic.print, fall back to regular print
-        print(f"Note: Using regular print for logging (IC environment not detected: {str(e)})")
+        # print(f"Note: Using regular print for logging (IC environment not detected: {str(e)})")
+        pass
         
 except ImportError:
     # If kybra isn't available, we're definitely not in an IC environment
