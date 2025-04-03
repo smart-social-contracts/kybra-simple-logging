@@ -9,11 +9,11 @@ from kybra_simple_logging import (
     disable_logging,
     enable_logging,
     get_logger,
-    logger,
-    set_log_level,
-    save_var,
-    load_var,
     list_vars,
+    load_var,
+    logger,
+    save_var,
+    set_log_level,
 )
 
 
@@ -155,24 +155,24 @@ def assert_disable_enable():
 def test_debug_vars():
     """Test the debug variable storage functions"""
     custom_print("START debug_vars")
-    
+
     # Test saving and loading a simple variable
     save_var("test_string", "Hello, World!")
     loaded_string = load_var("test_string")
     custom_print(f"Loaded string: {loaded_string}")
     assert loaded_string == "Hello, World!"
-    
+
     # Test saving and loading a complex variable
     test_dict = {"name": "Test User", "score": 42, "active": True}
     save_var("test_dict", test_dict)
     loaded_dict = load_var("test_dict")
     assert loaded_dict["name"] == "Test User"
     assert loaded_dict["score"] == 42
-    
+
     # Test loading a non-existent variable
     non_existent = load_var("does_not_exist")
     assert non_existent is None
-    
+
     # Test list_vars
     var_list = list_vars()
     custom_print(f"Variable list: {var_list}")
@@ -180,11 +180,11 @@ def test_debug_vars():
     assert "test_dict" in var_list
     assert var_list["test_string"] == "str"
     assert var_list["test_dict"] == "dict"
-    
+
     # Test overwriting a variable
     save_var("test_string", "Updated value")
     assert load_var("test_string") == "Updated value"
-    
+
     custom_print("END debug_vars")
     return 0
 
@@ -192,17 +192,17 @@ def test_debug_vars():
 def assert_debug_vars():
     logs = open("log.txt").read()
     logs = extract_between(logs, "START debug_vars", "END debug_vars")
-    
+
     # Verify the debug messages about saving variables appear in logs
     assert "Variable saved with tag 'test_string'" in logs
     assert "Variable saved with tag 'test_dict'" in logs
-    
+
     # Verify warning about non-existent variable
     assert "No variable found with tag 'does_not_exist'" in logs
-    
+
     # Verify info message from list_vars
     assert "Available debug variables:" in logs
-    
+
     return 0
 
 

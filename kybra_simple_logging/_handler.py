@@ -1,10 +1,10 @@
 # Simple custom logger that doesn't use Python's logging module
 # to avoid process ID access which is unsupported in IC environment
 
-import sys
 import json
 import pickle
-from typing import Dict, Literal, Optional, Union, Any
+import sys
+from typing import Any, Dict, Literal, Optional, Union
 
 # Global settings
 _LOGGING_ENABLED = True
@@ -136,7 +136,7 @@ def enable_logging() -> None:
 # Debug variable storage functions
 def save_var(tag: str, obj: Any) -> None:
     """Store a variable with a tag for debugging purposes
-    
+
     Args:
         tag: A string identifier to later retrieve the object
         obj: Any Python object to store
@@ -146,10 +146,10 @@ def save_var(tag: str, obj: Any) -> None:
 
 def load_var(tag: str) -> Any:
     """Retrieve a previously stored variable by its tag
-    
+
     Args:
         tag: The identifier used when saving the variable
-        
+
     Returns:
         The stored object or None if not found
     """
@@ -160,7 +160,7 @@ def load_var(tag: str) -> Any:
 
 def list_vars() -> Dict[str, str]:
     """List all stored variables with their types
-    
+
     Returns:
         A dictionary mapping variable tags to their types
     """
@@ -169,4 +169,3 @@ def list_vars() -> Dict[str, str]:
 
 # Default logger for backwards compatibility
 logger = get_logger()
-
