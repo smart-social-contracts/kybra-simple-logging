@@ -166,14 +166,7 @@ def run_all_tests():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        # Run specific test if named
-        test_name = sys.argv[1]
-        if test_name in globals() and callable(globals()[test_name]):
-            sys.exit(globals()[test_name]())
-        else:
-            custom_print(f"Test {test_name} not found")
-            sys.exit(1)
-    else:
-        # Run all tests by default
-        sys.exit(run_all_tests())
+    # Run all tests by default
+    # sys.exit(run_all_tests())
+    print('aa22aaaaaaaaaa')
+    sys.exit(-1)
