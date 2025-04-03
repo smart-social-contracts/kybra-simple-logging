@@ -10,20 +10,27 @@ NC='\033[0m' # No Color
 
 # Default values
 VERBOSE=0
-TEST_IDS=("basic_logging" "named_loggers" "level_filtering" "global_level" "disable_enable" "debug_vars")
+TEST_IDS=("basic_logging" "named_loggers" "level_filtering" "global_level" "disable_enable")
+VAR_TEST_TYPES=("save_load" "complex_objects" "nonexistent" "list_vars" "overwrite" "all")
+SELECTED_VAR_TESTS=()
 SELECTED_TESTS=()
 
 # Help function
 show_help() {
-  echo "Usage: $0 [options] [test_ids]"
+  echo "Usage: $0 [options] [test_ids] [var_tests]"
   echo
   echo "Options:"
   echo "  -h, --help     Show this help message"
   echo "  -v, --verbose  Show verbose output (including commands being run)"
   echo
-  echo "Available tests:"
+  echo "Available logging tests:"
   for test in "${TEST_IDS[@]}"; do
     echo "  - $test"
+  done
+  echo
+  echo "Available variable storage tests:"
+  for test in "${VAR_TEST_TYPES[@]}"; do
+    echo "  - var:$test"
   done
   echo
   echo "If no test_ids are provided, all tests will be run."
@@ -41,15 +48,22 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     *)
-      SELECTED_TESTS+=("$1")
+      # Check if this is a var test (prefixed with var:)
+      if [[ $1 == var:* ]]; then
+        var_test=${1#var:}
+        SELECTED_VAR_TESTS+=("$var_test")
+      else
+        SELECTED_TESTS+=("$1")
+      fi
       shift
       ;;
   esac
 done
 
 # If no tests specified, run all tests
-if [ ${#SELECTED_TESTS[@]} -eq 0 ]; then
+if [ ${#SELECTED_TESTS[@]} -eq 0 ] && [ ${#SELECTED_VAR_TESTS[@]} -eq 0 ]; then
   SELECTED_TESTS=("${TEST_IDS[@]}")
+  SELECTED_VAR_TESTS=("all")
 fi
 
 # Set verbosity
@@ -96,10 +110,52 @@ for TEST_ID in "${SELECTED_TESTS[@]}"; do
   fi
 done
 
+# If any var tests were specified, run them
+if [ ${#SELECTED_VAR_TESTS[@]} -gt 0 ]; then
+  echo
+  echo -e "${BLUE}=== Running Variable Storage Tests ===${NC}"
+  
+  for VAR_TEST in "${SELECTED_VAR_TESTS[@]}"; do
+    if [[ ! " ${VAR_TEST_TYPES[*]} " =~ " ${VAR_TEST} " ]]; then
+      echo -e "${YELLOW}Warning: Unknown variable test '${VAR_TEST}', skipping${NC}"
+      continue
+    fi
+    
+    start_time=$(date +%s.%N)
+    
+    if [ "$VAR_TEST" = "all" ]; then
+      echo -e "${BLUE}Running all variable tests...${NC}"
+      # Run all variable tests
+      PYTHONPATH=".:../.." python tests/test_vars.py
+    else
+      echo -e "${BLUE}Testing variable storage: ${VAR_TEST}...${NC}"
+      # Run the specified test
+      PYTHONPATH=".:../.." python tests/test_vars.py test_${VAR_TEST}
+    fi
+    
+    VAR_TEST_RESULT=$?
+    
+    end_time=$(date +%s.%N)
+    duration=$(echo "$end_time - $start_time" | bc)
+    
+    if [ $VAR_TEST_RESULT -eq 0 ]; then
+      echo -e "${GREEN}✓ Variable test ${VAR_TEST} passed (${duration}s)${NC}"
+      pass_count=$((pass_count + 1))
+    else
+      echo -e "${RED}✗ Variable test ${VAR_TEST} failed with exit code ${VAR_TEST_RESULT} (${duration}s)${NC}"
+      fail_count=$((fail_count + 1))
+      exit_code=1
+    fi
+  done
+fi
+
 # Print summary
 echo
 echo -e "${BLUE}=== Test Summary ===${NC}"
-echo -e "Total tests: ${total_tests}"
+echo -e "Total regular tests: ${total_tests}"
+if [ ${#SELECTED_VAR_TESTS[@]} -gt 0 ]; then
+  echo -e "Variable storage tests: ${#SELECTED_VAR_TESTS[@]}"
+fi
 echo -e "${GREEN}Passed: ${pass_count}${NC}"
 if [ $fail_count -gt 0 ]; then
   echo -e "${RED}Failed: ${fail_count}${NC}"
