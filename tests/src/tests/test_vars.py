@@ -157,7 +157,7 @@ def run_all_tests():
             custom_print(f"Test {test_func.__name__} failed with exception: {e}")
             failures += 1
 
-    custom_print("\n=== Variable Storage Tests Complete ===\n")    
+    custom_print("\n=== Variable Storage Tests Complete ===\n")
     custom_print(f"Ran {len(test_functions)} tests with {failures} failures")
     return failures
 
