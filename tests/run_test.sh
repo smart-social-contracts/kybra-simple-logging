@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 
 # Default values
 VERBOSE=0
-TEST_IDS=("basic_logging" "named_loggers" "level_filtering" "global_level" "disable_enable")
+TEST_IDS=("basic_logging" "named_loggers" "level_filtering" "global_level" "disable_enable" "debug_vars")
 SELECTED_TESTS=()
 
 # Help function
