@@ -166,7 +166,4 @@ def run_all_tests():
 
 
 if __name__ == "__main__":
-    # Run all tests by default
-    # sys.exit(run_all_tests())
-    print('aa22aaaaaaaaaa')
-    sys.exit(-1)
+    sys.exit(run_all_tests())
