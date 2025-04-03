@@ -142,7 +142,6 @@ def save_var(tag: str, obj: Any) -> None:
         obj: Any Python object to store
     """
     _DEBUG_VARS[tag] = obj
-    logger.debug(f"Variable saved with tag '{tag}'")
 
 
 def load_var(tag: str) -> Any:
@@ -155,7 +154,6 @@ def load_var(tag: str) -> Any:
         The stored object or None if not found
     """
     if tag not in _DEBUG_VARS:
-        logger.warning(f"No variable found with tag '{tag}'")
         return None
     return _DEBUG_VARS[tag]
 
@@ -166,54 +164,9 @@ def list_vars() -> Dict[str, str]:
     Returns:
         A dictionary mapping variable tags to their types
     """
-    result = {tag: str(type(obj).__name__) for tag, obj in _DEBUG_VARS.items()}
-    if not result:
-        logger.info("No debug variables currently stored")
-    else:
-        logger.info(f"Available debug variables: {', '.join(result.keys())}")
-    return result
+    return {tag: str(type(obj).__name__) for tag, obj in _DEBUG_VARS.items()}
 
 
 # Default logger for backwards compatibility
 logger = get_logger()
 
-
-# Debug variable storage functions
-def save_var(tag: str, obj: Any) -> None:
-    """Store a variable with a tag for debugging purposes
-    
-    Args:
-        tag: A string identifier to later retrieve the object
-        obj: Any Python object to store
-    """
-    _DEBUG_VARS[tag] = obj
-    logger.debug(f"Variable saved with tag '{tag}'")
-
-
-def load_var(tag: str) -> Any:
-    """Retrieve a previously stored variable by its tag
-    
-    Args:
-        tag: The identifier used when saving the variable
-        
-    Returns:
-        The stored object or None if not found
-    """
-    if tag not in _DEBUG_VARS:
-        logger.warning(f"No variable found with tag '{tag}'")
-        return None
-    return _DEBUG_VARS[tag]
-
-
-def list_vars() -> Dict[str, str]:
-    """List all stored variables with their types
-    
-    Returns:
-        A dictionary mapping variable tags to their types
-    """
-    result = {tag: str(type(obj).__name__) for tag, obj in _DEBUG_VARS.items()}
-    if not result:
-        logger.info("No debug variables currently stored")
-    else:
-        logger.info(f"Available debug variables: {', '.join(result.keys())}")
-    return result
