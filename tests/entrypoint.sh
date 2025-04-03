@@ -32,6 +32,17 @@ for TEST_ID in "${TEST_IDS[@]}"; do
 
 done
 
+# Run variable tests
+echo "Testing variable storage module..."
+TEST_RESULT=$(dfx canister call test run_var_test)
+if [ "$TEST_RESULT" != '(0 : int)' ]; then
+  echo "Error: run_var_test test returned unexpected result: $TEST_RESULT"
+  dfx stop
+  exit 1
+else
+  echo "run_var_test test passed!"
+fi
+
 echo "Stopping dfx..."
 dfx stop
 
