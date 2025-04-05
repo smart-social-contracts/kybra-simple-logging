@@ -1,19 +1,42 @@
-.kybra
-.dfx
-
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
-develop-eggs/
 dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Testing and Coverage
+.coverage
+.coverage.*
+coverage.xml
+.pytest_cache/
+htmlcov/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Internet Computer / Kybra
+.dfx/
+.kybra/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 downloads/
 eggs/
 .eggs/

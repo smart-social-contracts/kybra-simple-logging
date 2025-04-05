@@ -6,6 +6,20 @@
 # Exit on first error
 set -e
 
+# Check if required linting tools are installed
+check_command() {
+    if ! command -v $1 &> /dev/null; then
+        echo "Error: $1 is not installed or not in PATH"
+        echo "Install it with: pip install $1"
+        exit 1
+    fi
+}
+
+check_command black
+check_command isort
+check_command flake8
+check_command mypy
+
 # Check if we should fix issues or just check
 FIX_MODE=false
 if [ "$1" == "--fix" ]; then
@@ -20,7 +34,7 @@ echo "Running black..."
 if [ "$FIX_MODE" = true ]; then
     black kybra_simple_logging tests
 else
-    black --check kybra_simple_logging tests
+    black kybra_simple_logging tests --check
 fi
 
 # Check/fix imports with isort
@@ -28,16 +42,17 @@ echo "Running isort..."
 if [ "$FIX_MODE" = true ]; then
     isort kybra_simple_logging tests
 else
-    isort --check-only kybra_simple_logging tests
+    isort kybra_simple_logging tests --check-only
 fi
 
 # Lint with flake8 (no auto-fix available)
 echo "Running flake8..."
-flake8 kybra_simple_logging --ignore=E501,W391,W503,F405,F403,F401,E722,F811
-flake8 tests/src --ignore=E501,W391,W503,F405,F403,F401,E722
+# Using configuration from setup.cfg
+flake8 kybra_simple_logging tests
 
 # Type check with mypy (no auto-fix available)
 echo "Running mypy..."
+# Using configuration from setup.cfg
 mypy kybra_simple_logging tests
 
 echo "All linters completed successfully!"

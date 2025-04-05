@@ -8,7 +8,6 @@ setup(
     version="0.1.1",
     author="Smart Social Contracts",
     author_email="smartsocialcontracts@gmail.com",
-    url="https://smartsocialcontracts.org",
     description="A robust logging system for Internet Computer canisters built with Kybra",
     long_description=long_description,
     long_description_content_type="text/markdown",
