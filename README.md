@@ -1,7 +1,8 @@
 # Kybra Simple Logging
 
-[![Test](https://github.com/smart-social-contracts/kybra-simple-logging/actions/workflows/test_ic.yml/badge.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/actions/workflows/test_ic.yml)
-[![Python Versions](https://img.shields.io/pypi/pyversions/kybra-simple-logging.svg)](https://pypi.org/project/kybra-simple-logging/)
+[![Test](https://github.com/smart-social-contracts/kybra-simple-logging/actions/workflows/test.yml/badge.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/actions)
+[![PyPI version](https://badge.fury.io/py/kybra-simple-logging.svg)](https://badge.fury.io/py/kybra-simple-logging)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3107/)
 [![License](https://img.shields.io/github/license/smart-social-contracts/kybra-simple-logging.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/blob/main/LICENSE)
 
 A robust logging system for Internet Computer canisters built with Kybra, designed to overcome the limitations of Python's standard logging module in the IC environment. The library includes in-memory log storage capabilities, making it ideal for debugging asynchronous functions where standard logging might be unreliable.
