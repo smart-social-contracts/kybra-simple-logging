@@ -7,7 +7,7 @@ import sys
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Any, Dict, List, Literal, Optional, Union, Deque, Callable
+from typing import Any, Callable, Deque, Dict, List, Literal, Optional, Union
 
 # Global settings
 _LOGGING_ENABLED = True
@@ -20,21 +20,23 @@ _DEBUG_VARS: Dict[str, Any] = {}
 _MAX_LOG_ENTRIES = 1000  # Maximum number of log entries to keep in memory
 _LOG_STORAGE: Deque["LogEntry"] = deque(maxlen=_MAX_LOG_ENTRIES)
 
+
 @dataclass
 class LogEntry:
     """Represents a single log entry stored in memory"""
+
     timestamp: float
     level: str
     logger_name: str
     message: str
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert log entry to dictionary for serialization"""
         return {
             "timestamp": self.timestamp,
             "level": self.level,
             "logger_name": self.logger_name,
-            "message": self.message
+            "message": self.message,
         }
 
 
@@ -50,10 +52,7 @@ def _print_log(level: str, message: str, logger_name: str) -> None:
 def _store_log_entry(level: str, message: str, logger_name: str) -> None:
     """Store a log entry in the memory buffer"""
     entry = LogEntry(
-        timestamp=time.time(),
-        level=level,
-        logger_name=logger_name,
-        message=message
+        timestamp=time.time(), level=level, logger_name=logger_name, message=message
     )
     _LOG_STORAGE.append(entry)
 
@@ -209,50 +208,52 @@ def list_vars() -> Dict[str, str]:
 # Default logger for backwards compatibility
 logger = get_logger()
 
+
 # In-memory log retrieval functions
 def get_logs(
     max_entries: Optional[int] = None,
     min_level: Optional[LogLevel] = None,
     logger_name: Optional[str] = None,
-    filter_fn: Optional[Callable[[LogEntry], bool]] = None
+    filter_fn: Optional[Callable[[LogEntry], bool]] = None,
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
-    
+
     Args:
         max_entries: Maximum number of entries to return (newest first)
         min_level: Minimum log level to include
         logger_name: Filter logs to a specific logger
         filter_fn: Custom filter function taking a LogEntry and returning boolean
-        
+
     Returns:
         List of log entries as dictionaries
     """
     # Create a copy of the logs to avoid modifying the original
     logs = list(_LOG_STORAGE)
-    
+
     # Apply filters
     if min_level is not None:
         min_level_value = SimpleLogger.LEVEL_VALUES.get(min_level, 0)
-        logs = [log for log in logs if SimpleLogger.LEVEL_VALUES.get(log.level, 0) >= min_level_value]
-    
+        logs = [
+            log
+            for log in logs
+            if SimpleLogger.LEVEL_VALUES.get(log.level, 0) >= min_level_value
+        ]
+
     if logger_name is not None:
         logs = [log for log in logs if log.logger_name == logger_name]
-    
+
     if filter_fn is not None:
         logs = [log for log in logs if filter_fn(log)]
-    
+
     # Sort by timestamp (newest first)
     logs.sort(key=lambda log: log.timestamp, reverse=True)
-    
+
     # Limit the number of entries if requested
     if max_entries is not None:
         logs = logs[:max_entries]
-    
+
     # Convert to dictionaries for easier serialization
     return [log.to_dict() for log in logs]
-
-
-
 
 
 def clear_logs() -> None:
@@ -262,7 +263,7 @@ def clear_logs() -> None:
 
 def set_max_log_entries(max_entries: int) -> None:
     """Set the maximum number of log entries to keep in memory
-    
+
     Args:
         max_entries: New maximum capacity of the log storage
     """
@@ -270,18 +271,18 @@ def set_max_log_entries(max_entries: int) -> None:
     # Create a new deque with the new max length
     _MAX_LOG_ENTRIES = max(1, max_entries)  # Ensure at least 1 entry
     new_storage = deque(maxlen=_MAX_LOG_ENTRIES)
-    
+
     # Transfer any existing logs (up to the new capacity)
     logs = list(_LOG_STORAGE)
     logs.sort(key=lambda log: log.timestamp)  # Sort by timestamp (oldest first)
-    
+
     # Keep the newest logs if we're reducing capacity
     if len(logs) > _MAX_LOG_ENTRIES:
         logs = logs[-_MAX_LOG_ENTRIES:]
-        
+
     # Add logs to the new storage
     for log in logs:
         new_storage.append(log)
-    
+
     # Replace the old storage with the new one
     _LOG_STORAGE = new_storage

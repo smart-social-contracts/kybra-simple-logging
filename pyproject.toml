@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kybra_simple_logging"
-version = "0.0.2"
+version = "0.0.3"
 description = "A lightweight logging library for Kybra on the Internet Computer (IC)"
 readme = "README.md"
 authors = [

@@ -200,9 +200,6 @@ def assert_debug_vars():
     # Verify warning about non-existent variable
     assert "No variable found with tag 'does_not_exist'" in logs
 
-
-
-
     # Verify info message from list_vars
     assert "Available debug variables:" in logs
 

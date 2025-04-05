@@ -1,7 +1,7 @@
 from kybra import ic, query, update
 
 # Import and expose all the test functions
-from tests import test_functions, test_vars, test_memory_logs
+from tests import test_functions, test_memory_logs, test_vars
 
 
 @query
