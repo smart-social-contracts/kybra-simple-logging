@@ -252,35 +252,7 @@ def get_logs(
     return [log.to_dict() for log in logs]
 
 
-def save_logs_to_file(filename: str) -> None:
-    """Save in-memory logs to a file for persistence
-    
-    Args:
-        filename: Path to the file where logs will be saved
-    """
-    logs = get_logs()
-    try:
-        with open(filename, 'w') as f:
-            json.dump(logs, f)
-    except Exception as e:
-        print(f"Error saving logs to file: {e}")
 
-
-def load_logs_from_file(filename: str) -> List[Dict[str, Any]]:
-    """Load logs from a file previously saved with save_logs_to_file
-    
-    Args:
-        filename: Path to the file where logs were saved
-        
-    Returns:
-        List of log entries as dictionaries, or empty list if file not found
-    """
-    try:
-        with open(filename, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Error loading logs from file: {e}")
-        return []
 
 
 def clear_logs() -> None:

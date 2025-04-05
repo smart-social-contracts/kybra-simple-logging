@@ -15,10 +15,8 @@ from ._handler import LogEntry  # Log entry data class
 from ._handler import get_logs  # Function to retrieve logs from memory
 from ._handler import clear_logs  # Function to clear all logs from memory
 from ._handler import set_max_log_entries  # Function to set maximum log storage size
-from ._handler import save_logs_to_file  # Function to save logs to a file
-from ._handler import load_logs_from_file  # Function to load logs from a file
 
 # This allows imports like:
 # from kybra_simple_logging import logger, get_logger, set_log_level
 # from kybra_simple_logging import save_var, load_var, list_vars
-# from kybra_simple_logging import get_logs, clear_logs, set_max_log_entries, save_logs_to_file, load_logs_from_file
+# from kybra_simple_logging import get_logs, clear_logs, set_max_log_entries
