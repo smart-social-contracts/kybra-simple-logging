@@ -1,7 +1,0 @@
-Note: Using regular print for logging (IC environment not detected: name '_kybra_ic' is not defined)
-START basic_logging
-[INFO] [kybra_simple_logging] [TEST-BASIC] Info message
-[WARNING] [kybra_simple_logging] [TEST-BASIC] Warning message
-[ERROR] [kybra_simple_logging] [TEST-BASIC] Error message
-[CRITICAL] [kybra_simple_logging] [TEST-BASIC] Critical message
-END basic_logging
