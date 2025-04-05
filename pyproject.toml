@@ -8,7 +8,7 @@ version = "0.0.5"
 description = "A lightweight logging library for Kybra on the Internet Computer (IC)"
 readme = "README.md"
 authors = [
-    { name = "Smart Social Contracts", email = "smartsocialcontracts@gmail.com" }
+    { name = "Smart Social Contracts", email = "contact@smartsocialcontracts.org" }
 ]
 license = { file = "LICENSE" }
 classifiers = [
