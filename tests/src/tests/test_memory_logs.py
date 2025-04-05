@@ -68,6 +68,15 @@ def run_tests():
         custom_print(f"✗ Memory logging toggle test FAILED: {e}")
         failures += 1
 
+    # Test 5: Log Entry IDs and Order
+    total += 1
+    try:
+        test_log_entry_ids()
+        custom_print("✓ Log entry ID and ordering test passed!")
+    except AssertionError as e:
+        custom_print(f"✗ Log entry ID and ordering test FAILED: {e}")
+        failures += 1
+
     custom_print("\n=== Memory Logging Tests Complete ===")
     custom_print(f"Ran {total} tests with {failures} failures")
 
@@ -282,6 +291,115 @@ def test_memory_logging_toggle():
         in log["message"]
         for log in logs_after
     ), "Test message not found in logs after re-enabling memory logging"
+
+
+def test_log_entry_ids():
+    """Test log entry ID assignment and ordering capabilities"""
+    custom_print("Testing log entry IDs and ordering...")
+
+    # Start with a clean state
+    clear_logs()
+    test_logger = get_logger("id_test")
+
+    # Create logs with identical timestamps (as much as possible)
+    custom_print("Creating logs with potentially identical timestamps...")
+    for i in range(5):
+        test_logger.info(f"[ID-TEST] Log message {i}")
+
+    # Verify logs have unique and sequential IDs
+    logs = get_logs()
+
+    custom_print(f"Retrieved {len(logs)} logs")
+    assert len(logs) >= 5, f"Expected at least 5 logs, found {len(logs)}"
+
+    # Check that all logs have ID fields
+    for log in logs:
+        assert "id" in log, f"Log entry missing 'id' field: {log}"
+
+    # Find our test logs
+    test_logs = [log for log in logs if "[ID-TEST]" in log["message"]]
+
+    # Check that IDs are unique
+    ids = [log["id"] for log in test_logs]
+    unique_ids = set(ids)
+    custom_print(f"Found {len(unique_ids)} unique IDs in {len(test_logs)} test logs")
+    assert len(unique_ids) == len(test_logs), "Duplicate IDs found in logs"
+
+    # Test newest_first (default) ordering
+    newest_first_logs = get_logs(logger_name="id_test")
+    message_order_newest_first = [
+        int(log["message"].split()[-1]) for log in newest_first_logs
+    ]
+    custom_print(f"Newest first order: {message_order_newest_first}")
+
+    # Test oldest_first ordering
+    oldest_first_logs = get_logs(logger_name="id_test", oldest_first=True)
+    message_order_oldest_first = [
+        int(log["message"].split()[-1]) for log in oldest_first_logs
+    ]
+    custom_print(f"Oldest first order: {message_order_oldest_first}")
+
+    # Verify the orders are reversed
+    assert (
+        message_order_newest_first != message_order_oldest_first
+    ), "Oldest-first and newest-first orders should be different"
+
+    # Older messages should have smaller IDs
+    for i in range(len(oldest_first_logs) - 1):
+        assert (
+            oldest_first_logs[i]["id"] < oldest_first_logs[i + 1]["id"]
+        ), f"Log entry IDs not sequential: {oldest_first_logs[i]['id']} followed by {oldest_first_logs[i+1]['id']}"
+
+    # Test ID ordering without relying on time.sleep()
+    custom_print("Testing log entry ID ordering...")
+
+    # Create two logs that will have sequential IDs
+    test_logger.warning("[ID-TEST-ORDER] First log")
+    test_logger.warning("[ID-TEST-ORDER] Second log")
+
+    # Get logs in oldest first order
+    order_logs = get_logs(oldest_first=True)
+
+    # Find our test logs
+    order_test_logs = [log for log in order_logs if "[ID-TEST-ORDER]" in log["message"]]
+    if len(order_test_logs) >= 2:
+        first_log = next(
+            (log for log in order_test_logs if "First" in log["message"]), None
+        )
+        second_log = next(
+            (log for log in order_test_logs if "Second" in log["message"]), None
+        )
+
+        if first_log and second_log:
+            custom_print(f"First log ID: {first_log['id']}")
+            custom_print(f"Second log ID: {second_log['id']}")
+
+            # Verify IDs are sequential
+            assert first_log["id"] < second_log["id"], "Log IDs should be sequential"
+
+            # Find positions in the log list
+            try:
+                first_index = next(
+                    i
+                    for i, log in enumerate(order_logs)
+                    if "[ID-TEST-ORDER] First" in log["message"]
+                )
+                second_index = next(
+                    i
+                    for i, log in enumerate(order_logs)
+                    if "[ID-TEST-ORDER] Second" in log["message"]
+                )
+
+                # In oldest_first mode, the First log should come before Second log
+                assert (
+                    first_index < second_index
+                ), "Logs not properly ordered: expected First before Second"
+
+                custom_print("Log ordering by ID verified successfully")
+            except StopIteration:
+                custom_print(
+                    "Could not find test logs in all logs - skipping order check"
+                )
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ _DEBUG_VARS: Dict[str, Any] = {}
 # In-memory log storage
 _MAX_LOG_ENTRIES = 1000  # Maximum number of log entries to keep in memory
 _LOG_STORAGE: Deque["LogEntry"] = deque(maxlen=_MAX_LOG_ENTRIES)
+_LOG_SEQUENCE_COUNTER = 0  # Global counter for generating unique log entry IDs
 
 
 @dataclass
@@ -30,6 +31,7 @@ class LogEntry:
     level: str
     logger_name: str
     message: str
+    id: int  # Unique identifier for the log entry
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert log entry to dictionary for serialization"""
@@ -38,6 +40,7 @@ class LogEntry:
             "level": self.level,
             "logger_name": self.logger_name,
             "message": self.message,
+            "id": self.id,
         }
 
 
@@ -55,8 +58,15 @@ def _store_log_entry(level: str, message: str, logger_name: str) -> None:
     if not _MEMORY_LOGGING_ENABLED:
         return
 
+    global _LOG_SEQUENCE_COUNTER
+    _LOG_SEQUENCE_COUNTER += 1
+
     entry = LogEntry(
-        timestamp=time.time(), level=level, logger_name=logger_name, message=message
+        timestamp=time.time(),
+        level=level,
+        logger_name=logger_name,
+        message=message,
+        id=_LOG_SEQUENCE_COUNTER,
     )
     _LOG_STORAGE.append(entry)
 
@@ -89,11 +99,15 @@ try:
             if not _MEMORY_LOGGING_ENABLED:
                 return
 
+            global _LOG_SEQUENCE_COUNTER
+            _LOG_SEQUENCE_COUNTER += 1
+
             entry = LogEntry(
                 timestamp=ic.time(),
                 level=level,
                 logger_name=logger_name,
                 message=message,
+                id=_LOG_SEQUENCE_COUNTER,
             )
             _LOG_STORAGE.append(entry)
 
@@ -234,14 +248,16 @@ def get_logs(
     min_level: Optional[LogLevel] = None,
     logger_name: Optional[str] = None,
     filter_fn: Optional[Callable[[LogEntry], bool]] = None,
+    oldest_first: bool = False,  # New parameter to control sort order
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
 
     Args:
-        max_entries: Maximum number of entries to return (newest first)
+        max_entries: Maximum number of entries to return (newest first by default)
         min_level: Minimum log level to include
         logger_name: Filter logs to a specific logger
         filter_fn: Custom filter function taking a LogEntry and returning boolean
+        oldest_first: If True, return oldest logs first instead of newest first
 
     Returns:
         List of log entries as dictionaries
@@ -264,8 +280,9 @@ def get_logs(
     if filter_fn is not None:
         logs = [log for log in logs if filter_fn(log)]
 
-    # Sort by timestamp (newest first)
-    logs.sort(key=lambda log: log.timestamp, reverse=True)
+    # Sort by timestamp and id
+    # When timestamps are identical, id ensures correct order
+    logs.sort(key=lambda log: (log.timestamp, log.id), reverse=not oldest_first)
 
     # Limit the number of entries if requested
     if max_entries is not None:

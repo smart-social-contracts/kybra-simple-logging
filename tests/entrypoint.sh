@@ -57,4 +57,9 @@ fi
 echo "Stopping dfx..."
 dfx stop
 
+# Clean up log files
+echo "Cleaning up log files..."
+rm -f src/log.txt
+rm -f log.txt
+
 echo "All done!"
