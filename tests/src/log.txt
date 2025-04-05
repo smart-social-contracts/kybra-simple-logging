@@ -1,32 +1,112 @@
 Running dfx start for version 0.25.0
 Using the default configuration for the local shared network.
 Replica API running in the background on 127.0.0.1:4943
-2025-03-30 17:52:59.566518247 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Logger initializing
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_basic_logging...
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START basic_logging
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [TEST-BASIC] Info message
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [WARNING] [kybra_simple_logging] [TEST-BASIC] Warning message
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [kybra_simple_logging] [TEST-BASIC] Error message
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [CRITICAL] [kybra_simple_logging] [TEST-BASIC] Critical message
-2025-03-30 17:53:11.863789527 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END basic_logging
-2025-03-30 17:53:15.632283345 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_named_loggers...
-2025-03-30 17:53:15.632283345 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START named_loggers
-2025-03-30 17:53:15.632283345 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [auth] [TEST-NAMED] Auth system message
-2025-03-30 17:53:15.632283345 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [db] [TEST-NAMED] Database message
-2025-03-30 17:53:15.632283345 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END named_loggers
-2025-03-30 17:53:19.512061967 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_level_filtering...
-2025-03-30 17:53:19.512061967 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START level_filtering
-2025-03-30 17:53:19.512061967 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [filter_test] [VISIBLE] Error message
-2025-03-30 17:53:19.512061967 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [CRITICAL] [filter_test] [VISIBLE] Critical message
-2025-03-30 17:53:19.512061967 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END level_filtering
-2025-03-30 17:53:23.339580585 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_global_level...
-2025-03-30 17:53:23.339580585 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START global_level
-2025-03-30 17:53:23.339580585 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [kybra_simple_logging] [GLOBAL-VISIBLE] Error should appear
-2025-03-30 17:53:23.339580585 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [DEBUG] [kybra_simple_logging] [GLOBAL-NOW-VISIBLE] Debug should now appear
-2025-03-30 17:53:23.339580585 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END global_level
-2025-03-30 17:53:27.016787621 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_disable_enable...
-2025-03-30 17:53:27.016787621 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START disable_enable
-2025-03-30 17:53:27.016787621 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [BEFORE-DISABLE] This message should appear
-2025-03-30 17:53:27.016787621 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [AFTER-ENABLE] This should appear again
-2025-03-30 17:53:27.016787621 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END disable_enable
+2025-04-05 13:17:21.545668463 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Logger initializing
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_basic_logging...
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START basic_logging
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [TEST-BASIC] Info message
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [WARNING] [kybra_simple_logging] [TEST-BASIC] Warning message
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [kybra_simple_logging] [TEST-BASIC] Error message
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [CRITICAL] [kybra_simple_logging] [TEST-BASIC] Critical message
+2025-04-05 13:17:29.526572228 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END basic_logging
+2025-04-05 13:17:32.856573405 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_named_loggers...
+2025-04-05 13:17:32.856573405 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START named_loggers
+2025-04-05 13:17:32.856573405 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [auth] [TEST-NAMED] Auth system message
+2025-04-05 13:17:32.856573405 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [db] [TEST-NAMED] Database message
+2025-04-05 13:17:32.856573405 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END named_loggers
+2025-04-05 13:17:36.223956690 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_level_filtering...
+2025-04-05 13:17:36.223956690 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START level_filtering
+2025-04-05 13:17:36.223956690 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [filter_test] [VISIBLE] Error message
+2025-04-05 13:17:36.223956690 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [CRITICAL] [filter_test] [VISIBLE] Critical message
+2025-04-05 13:17:36.223956690 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END level_filtering
+2025-04-05 13:17:39.569454633 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_global_level...
+2025-04-05 13:17:39.569454633 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START global_level
+2025-04-05 13:17:39.569454633 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [kybra_simple_logging] [GLOBAL-VISIBLE] Error should appear
+2025-04-05 13:17:39.569454633 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [DEBUG] [kybra_simple_logging] [GLOBAL-NOW-VISIBLE] Debug should now appear
+2025-04-05 13:17:39.569454633 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END global_level
+2025-04-05 13:17:42.897511099 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running test_disable_enable...
+2025-04-05 13:17:42.897511099 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] START disable_enable
+2025-04-05 13:17:42.897511099 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [BEFORE-DISABLE] This message should appear
+2025-04-05 13:17:42.897511099 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [AFTER-ENABLE] This should appear again
+2025-04-05 13:17:42.897511099 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] END disable_enable
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running variable storage tests...
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing save_load ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Loaded string: Hello, World!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Loaded number: 42
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Loaded boolean: True
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Test passed!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing complex_objects ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Loaded dict: {'name': 'Test User', 'score': 42, 'active': True}
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Loaded nested object successfully
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Test passed!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing nonexistent ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Non-existent var returns: None
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Test passed!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing list_vars ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Variable list: {'test_string': 'str', 'test_number': 'int', 'test_bool': 'bool', 'test_dict': 'dict', 'test_nested': 'dict', 'var1': 'str', 'var2': 'int', 'var3': 'dict'}
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Test passed!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing overwrite ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Test passed!
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Variable Storage Tests Complete ===
+
+2025-04-05 13:17:46.274853830 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Ran 5 tests with 0 failures
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Running memory logging tests...
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Testing Memory Logging ===
+
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Testing basic memory logging...
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MEMORY-TEST] Info message from default logger
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [DEBUG] [memory_test] [MEMORY-TEST] Debug message
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [WARNING] [memory_test] [MEMORY-TEST] Warning message
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [memory_test] [MEMORY-TEST] Error message
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Retrieved 4 log entries
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] ✓ Basic memory logging test passed!
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Testing log filtering...
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [DEBUG] [kybra_simple_logging] [FILTER-TEST] Debug from default
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [FILTER-TEST] Info from default
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [kybra_simple_logging] [FILTER-TEST] Error from default
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [error_only] [FILTER-TEST] Error from error_only
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [info_only] [FILTER-TEST] Info from info_only
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Retrieved 2 ERROR logs
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Retrieved 1 logs from info_only logger
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Retrieved 2 INFO+ logs from default logger
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] ✓ Log filtering test passed!
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Testing max entries limit...
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 0
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 1
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 2
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 3
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 4
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 5
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 6
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 7
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 8
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [kybra_simple_logging] [MAX-TEST] Log message 9
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Retrieved 5 logs after setting max to 5
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] ✓ Max entries test passed!
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Testing memory logging enable/disable...
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Initial memory logging status: True
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [toggle_test] [TOGGLE-TEST] This message should be stored (enabled)
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Memory logging status after disable: False
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [toggle_test] [TOGGLE-TEST] This message should NOT be stored (disabled)
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [ERROR] [toggle_test] [TOGGLE-TEST] This error should NOT be stored (disabled)
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Found 1 logs when checking during disabled state
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Memory logging status after re-enable: True
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] [INFO] [toggle_test] [TOGGLE-TEST] This message should be stored again (re-enabled)
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Found 2 logs after re-enabling
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] ✓ Memory logging toggle test passed!
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] 
+=== Memory Logging Tests Complete ===
+2025-04-05 13:17:47.616774737 UTC: [Canister bkyz2-fmaaa-aaaaa-qaaaq-cai] Ran 4 tests with 0 failures
 All local network processes stopped

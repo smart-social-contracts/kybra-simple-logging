@@ -83,8 +83,23 @@ try:
             # Store in memory regardless of print settings
             _store_log_entry(level, message, logger_name)
 
-        # Replace the regular print with IC print
+        # Define IC-specific version of store_log_entry using ic.time()
+        def _ic_store_log_entry(level: str, message: str, logger_name: str) -> None:
+            """Store a log entry in the memory buffer if memory logging is enabled"""
+            if not _MEMORY_LOGGING_ENABLED:
+                return
+
+            entry = LogEntry(
+                timestamp=ic.time(),
+                level=level,
+                logger_name=logger_name,
+                message=message,
+            )
+            _LOG_STORAGE.append(entry)
+
+        # Replace the regular functions with IC versions
         _print_log = _ic_print_log
+        _store_log_entry = _ic_store_log_entry
 
     except:
         # If we get an error trying to use ic.print, fall back to regular print
