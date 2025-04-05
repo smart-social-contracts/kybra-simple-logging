@@ -44,6 +44,20 @@ else
   exit_code=1
 fi
 
+# Run memory logging tests
+echo -e "\n=== Running Memory Logging Tests ==="
+PYTHONPATH=".:../.." python tests/test_memory_logs.py
+result=$?
+
+if [ $result -eq 0 ]; then
+  echo -e "✓ Memory logging tests passed"
+  pass_count=$((pass_count + 1))
+else
+  echo -e "✗ Memory logging tests failed"
+  fail_count=$((fail_count + 1))
+  exit_code=1
+fi
+
 # Print summary
 echo -e "\n=== Test Summary ==="
 echo -e "Tests run: $((${#LOG_TESTS[@]}))"

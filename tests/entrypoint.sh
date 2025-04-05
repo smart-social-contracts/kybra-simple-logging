@@ -43,6 +43,17 @@ else
   echo "run_var_test test passed!"
 fi
 
+# Run memory logging tests
+echo "Testing memory logging module..."
+TEST_RESULT=$(dfx canister call test run_memory_logs_test)
+if [ "$TEST_RESULT" != '(0 : int)' ]; then
+  echo "Error: run_memory_logs_test returned unexpected result: $TEST_RESULT"
+  dfx stop
+  exit 1
+else
+  echo "run_memory_logs_test test passed!"
+fi
+
 echo "Stopping dfx..."
 dfx stop
 

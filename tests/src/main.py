@@ -1,7 +1,7 @@
 from kybra import ic, query, update
 
 # Import and expose all the test functions
-from tests import test_functions, test_vars
+from tests import test_functions, test_vars, test_memory_logs
 
 
 @query
@@ -20,3 +20,9 @@ def run_test(function_name: str) -> int:
 def run_var_test() -> int:
     ic.print("Running variable storage tests...")
     return test_vars.run_all_tests()
+
+
+@update
+def run_memory_logs_test() -> int:
+    ic.print("Running memory logging tests...")
+    return test_memory_logs.run_tests()
