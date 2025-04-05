@@ -22,6 +22,7 @@ A robust logging system for Internet Computer canisters built with Kybra, design
 - Capture logs even when display/printing is disabled
 - Store detailed log entries with timestamp, level, logger name, and message
 - Retrieve and filter logs by level, logger name, or custom criteria
+- Independent controls to enable/disable in-memory logging separately from console output
 - Ideal for debugging asynchronous functions in the Internet Computer environment
 
 ## Installation
@@ -34,7 +35,21 @@ pip install kybra-simple-logging
 
 ### Manual Installation
 
-In your Kybra project, simply copy the `kybra_simple_logging` directory to your project.
+Either copy the `kybra_simple_logging` directory from this repository, or use this script to install from PyPI:
+
+```bash
+#!/bin/bash
+# Download and extract kybra-simple-logging
+temp_dir=$(mktemp -d)
+pip download --no-deps --dest "$temp_dir" kybra-simple-logging
+wheel_file=$(find "$temp_dir" -name "*.whl" | head -n 1)
+unzip -q "$wheel_file" -d "$temp_dir/extract"
+pkg_dir=$(find "$temp_dir/extract" -type d -name "kybra_simple_logging")
+cp -r "$pkg_dir" .
+rm -rf "$temp_dir"
+```
+
+Save as `install.sh`, run with: `chmod +x install.sh && ./install.sh`
 
 ## Quick Start
 
@@ -68,12 +83,16 @@ disable_logging()
 enable_logging()
 
 # Use in-memory logging to retrieve logs
-from kybra_simple_logging import get_logs, clear_logs
+from kybra_simple_logging import get_logs, clear_logs, enable_memory_logging, disable_memory_logging
 
 # Clear any existing logs
 clear_logs()
 
-# Log some messages
+# Control memory logging (independent from console output)
+disable_memory_logging()  # Stop storing logs in memory (still prints to console if enabled)
+logger.info("This will NOT be stored in memory")  
+
+enable_memory_logging()  # Start storing logs in memory again
 logger.info("This message is stored in memory")
 
 # Retrieve all logs
@@ -123,7 +142,10 @@ def get_data():
 
 ```python
 from kybra import update, query
-from kybra_simple_logging import get_logger, get_logs, clear_logs, set_max_log_entries
+from kybra_simple_logging import (
+    get_logger, get_logs, clear_logs, set_max_log_entries,
+    enable_memory_logging, disable_memory_logging, is_memory_logging_enabled
+)
 
 logger = get_logger("debug_logger")
 
@@ -134,6 +156,10 @@ set_max_log_entries(1000)
 def process_async_task():
     # Clear logs for this specific task
     clear_logs()
+    
+    # Make sure memory logging is enabled for this task
+    if not is_memory_logging_enabled():
+        enable_memory_logging()
     
     logger.debug("Starting async task")
     # ... complex asynchronous operations ...
@@ -147,6 +173,15 @@ def process_async_task():
 def get_debug_logs(min_level=None, component=None):
     """Retrieve logs for debugging purposes"""
     return get_logs(min_level=min_level, logger_name=component)
+
+@query
+def toggle_memory_logging(enabled=True):
+    """Enable or disable memory logging"""
+    if enabled:
+        enable_memory_logging()
+    else:
+        disable_memory_logging()
+    return is_memory_logging_enabled()
 ```
 
 ### Using In-Memory Logs with kybra_simple_shell

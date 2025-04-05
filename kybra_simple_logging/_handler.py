@@ -11,6 +11,7 @@ from typing import Any, Callable, Deque, Dict, List, Literal, Optional, Union
 
 # Global settings
 _LOGGING_ENABLED = True
+_MEMORY_LOGGING_ENABLED = True  # Controls whether logs are stored in memory
 _LOGGERS: Dict[str, "SimpleLogger"] = {}
 
 # Debug variable storage
@@ -50,7 +51,10 @@ def _print_log(level: str, message: str, logger_name: str) -> None:
 
 
 def _store_log_entry(level: str, message: str, logger_name: str) -> None:
-    """Store a log entry in the memory buffer"""
+    """Store a log entry in the memory buffer if memory logging is enabled"""
+    if not _MEMORY_LOGGING_ENABLED:
+        return
+
     entry = LogEntry(
         timestamp=time.time(), level=level, logger_name=logger_name, message=message
     )
@@ -259,6 +263,23 @@ def get_logs(
 def clear_logs() -> None:
     """Clear all logs from memory"""
     _LOG_STORAGE.clear()
+
+
+def disable_memory_logging() -> None:
+    """Disable storing logs in memory"""
+    global _MEMORY_LOGGING_ENABLED
+    _MEMORY_LOGGING_ENABLED = False
+
+
+def enable_memory_logging() -> None:
+    """Enable storing logs in memory"""
+    global _MEMORY_LOGGING_ENABLED
+    _MEMORY_LOGGING_ENABLED = True
+
+
+def is_memory_logging_enabled() -> bool:
+    """Check if memory logging is enabled"""
+    return _MEMORY_LOGGING_ENABLED
 
 
 def set_max_log_entries(max_entries: int) -> None:

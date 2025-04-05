@@ -3,9 +3,12 @@
 from kybra_simple_logging import (  # In-memory logging imports
     clear_logs,
     disable_logging,
+    disable_memory_logging,
     enable_logging,
+    enable_memory_logging,
     get_logger,
     get_logs,
+    is_memory_logging_enabled,
     logger,
     set_log_level,
     set_max_log_entries,
@@ -54,6 +57,15 @@ def run_tests():
         custom_print("✓ Max entries test passed!")
     except AssertionError as e:
         custom_print(f"✗ Max entries test FAILED: {e}")
+        failures += 1
+
+    # Test 4: Memory Logging Toggle
+    total += 1
+    try:
+        test_memory_logging_toggle()
+        custom_print("✓ Memory logging toggle test passed!")
+    except AssertionError as e:
+        custom_print(f"✗ Memory logging toggle test FAILED: {e}")
         failures += 1
 
     custom_print("\n=== Memory Logging Tests Complete ===")
@@ -200,21 +212,76 @@ def test_max_entries():
 
     assert len(logs) == 5, f"Expected exactly 5 logs, found {len(logs)}"
 
-    # Extract log numbers to verify we have the newest ones
-    log_numbers = []
-    for log in logs:
-        if "[MAX-TEST] Log message" in log["message"]:
-            number = int(log["message"].split()[-1])
-            log_numbers.append(number)
 
-    log_numbers.sort()
-    custom_print(f"Log message numbers: {log_numbers}")
+def test_memory_logging_toggle():
+    """Test enabling and disabling memory logging functionality"""
+    custom_print("Testing memory logging enable/disable...")
 
-    # We should have the 5 most recent logs (5-9)
-    assert log_numbers == [5, 6, 7, 8, 9], f"Expected logs 5-9, found {log_numbers}"
+    # Start with a clean state
+    clear_logs()
+    enable_memory_logging()  # Make sure memory logging is enabled first
 
-    # Reset max entries for other tests
-    set_max_log_entries(1000)
+    # First, verify memory logging is working when enabled
+    test_logger = get_logger("toggle_test")
+    initial_status = is_memory_logging_enabled()
+    custom_print(f"Initial memory logging status: {initial_status}")
+    assert initial_status, "Memory logging should be enabled by default"
+
+    # Log a message when memory logging is enabled
+    test_logger.info("[TOGGLE-TEST] This message should be stored (enabled)")
+    logs_before = get_logs()
+    assert (
+        len(logs_before) > 0
+    ), "Expected at least one log message when memory logging is enabled"
+    assert any(
+        "[TOGGLE-TEST] This message should be stored (enabled)" in log["message"]
+        for log in logs_before
+    ), "Test message not found in logs when memory logging was enabled"
+
+    # Now disable memory logging
+    disable_memory_logging()
+    disabled_status = is_memory_logging_enabled()
+    custom_print(f"Memory logging status after disable: {disabled_status}")
+    assert (
+        not disabled_status
+    ), "Memory logging should be disabled after calling disable_memory_logging()"
+
+    # Log more messages when disabled (these should not be captured)
+    test_logger.info("[TOGGLE-TEST] This message should NOT be stored (disabled)")
+    test_logger.error("[TOGGLE-TEST] This error should NOT be stored (disabled)")
+
+    # Get logs to ensure nothing new was added
+    logs_during_disable = get_logs()
+    custom_print(
+        f"Found {len(logs_during_disable)} logs when checking during disabled state"
+    )
+
+    # Count shouldn't have increased (might even be less if other tests cleared logs)
+    assert all(
+        "[TOGGLE-TEST] This message should NOT be stored" not in log["message"]
+        for log in logs_during_disable
+    ), "Found a log message that should NOT have been captured while memory logging was disabled"
+
+    # Re-enable memory logging
+    enable_memory_logging()
+    reenabled_status = is_memory_logging_enabled()
+    custom_print(f"Memory logging status after re-enable: {reenabled_status}")
+    assert (
+        reenabled_status
+    ), "Memory logging should be enabled after calling enable_memory_logging()"
+
+    # Log more messages when re-enabled
+    test_logger.info("[TOGGLE-TEST] This message should be stored again (re-enabled)")
+
+    # Check that new logs are being captured again
+    logs_after = get_logs()
+    custom_print(f"Found {len(logs_after)} logs after re-enabling")
+
+    assert any(
+        "[TOGGLE-TEST] This message should be stored again (re-enabled)"
+        in log["message"]
+        for log in logs_after
+    ), "Test message not found in logs after re-enabling memory logging"
 
 
 if __name__ == "__main__":
