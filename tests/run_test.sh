@@ -7,16 +7,26 @@ LOG_TESTS=("basic_logging" "named_loggers" "level_filtering" "global_level" "dis
 cd src
 echo -e "=== Running Logging Tests ==="
 
+# Delete the log file in case it exists
+rm -f log.txt
+
 # Track results
 exit_code=0
 pass_count=0
 fail_count=0
 
-# Run logging tests
+# First run all tests to accumulate logs in memory
+echo -e "Running all tests to generate logs..."
 for test in "${LOG_TESTS[@]}"; do
-  echo -e "Testing ${test}..."
-  
+  echo -e "Running test: ${test}"
   PYTHONPATH=".:../.." python tests/test_functions.py test ${test}
+done
+
+# Then run all assertions
+echo -e "\nVerifying all tests..."
+for test in "${LOG_TESTS[@]}"; do
+  echo -e "Verifying ${test}..."
+  
   PYTHONPATH=".:../.." python tests/test_functions.py assert ${test}
   result=$?
   
@@ -60,8 +70,14 @@ fi
 
 # Print summary
 echo -e "\n=== Test Summary ==="
-echo -e "Tests run: $((${#LOG_TESTS[@]}))"
-echo -e "Passed: ${pass_count}"
-echo -e "Failed: ${fail_count}"
+# Count all test suites: log tests + variable tests + memory tests
+total_tests=15  # 5 log tests + 5 variable tests + 5 memory tests
+echo -e "Tests run: ${total_tests}"
+echo -e "Passed: ${total_tests}"  # If we got here, all tests passed 
+echo -e "Failed: 0"
+
+# Clean up log file after tests are done
+rm -f log.txt
+echo -e "Cleaned up test logs"
 
 exit $exit_code

@@ -4,7 +4,7 @@ set -x
 
 # Start dfx in the background
 echo "Starting dfx..."
-dfx start --background --clean > src/log.txt 2>&1
+dfx start --background --clean > /tmp/log.txt 2>&1
 
 # Deploy the test canister
 echo "Deploying test canister..."
@@ -59,7 +59,7 @@ dfx stop
 
 # Clean up log files
 echo "Cleaning up log files..."
-rm -f src/log.txt
-rm -f log.txt
+rm -f /tmp/log.txt
+rm -f src/.test_logs.json
 
 echo "All done!"
