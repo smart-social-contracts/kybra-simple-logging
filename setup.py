@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="kybra_simple_logging",
-    version="0.1.2",
+    version="0.1.3",
     author="Smart Social Contracts",
     author_email="smartsocialcontracts@gmail.com",
     description="A robust logging system for Internet Computer canisters built with Kybra",
