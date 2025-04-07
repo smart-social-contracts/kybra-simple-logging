@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kybra_simple_logging"
-version = "0.0.5"
+version = "0.1.2"
 description = "A lightweight logging library for Kybra on the Internet Computer (IC)"
 readme = "README.md"
 authors = [
-    { name = "Smart Social Contracts", email = "contact@smartsocialcontracts.org" }
+    { name = "Smart Social Contracts", email = "smartsocialcontracts@gmail.com" }
 ]
 license = { file = "LICENSE" }
 classifiers = [
