@@ -34,24 +34,6 @@ A robust logging system for Internet Computer canisters built with Kybra, design
 pip install kybra-simple-logging
 ```
 
-### Manual Installation
-
-Either copy the `kybra_simple_logging` directory from this repository, or use this script to install from PyPI:
-
-```bash
-#!/bin/bash
-# Download and extract kybra-simple-logging
-temp_dir=$(mktemp -d)
-pip download --no-deps --dest "$temp_dir" kybra-simple-logging
-wheel_file=$(find "$temp_dir" -name "*.whl" | head -n 1)
-unzip -q "$wheel_file" -d "$temp_dir/extract"
-pkg_dir=$(find "$temp_dir/extract" -type d -name "kybra_simple_logging")
-cp -r "$pkg_dir" .
-rm -rf "$temp_dir"
-```
-
-Save as `install.sh`, run with: `chmod +x install.sh && ./install.sh`
-
 ## Quick Start
 
 ```python
@@ -207,9 +189,9 @@ git clone https://github.com/smart-social-contracts/kybra-simple-logging.git
 cd kybra-simple-logging
 
 # Recommended setup
-pip install pyenv virtualenv
+pyenv install 3.10.7
 pyenv local 3.10.7
-python -m virtualenv venv
+python -m venv venv
 source venv/bin/activate
 
 # Install development dependencies
@@ -219,17 +201,7 @@ pip install -r requirements-dev.txt
 cd tests && ./run_test.sh
 
 # Run linters
-black .
-isort .
-flake8 .
-mypy .
-```
-
-## Running Tests
-
-```bash
-pip install -r requirements-dev.txt
-python -m pytest -v
+./run_linters.sh
 ```
 
 ## License
