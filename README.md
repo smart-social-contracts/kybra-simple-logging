@@ -5,7 +5,7 @@
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3107/)
 [![License](https://img.shields.io/github/license/smart-social-contracts/kybra-simple-logging.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/blob/main/LICENSE)
 
-A simple logging system for Internet Computer canisters built with Kybra. The library includes in-memory log storage capabilities, providing robust logging for all canister functions including asynchronous operations.
+A simple logging system for the [Internet Computer](https://internetcomputer.org) built with [Kybra](https://github.com/demergent-labs/kybra). The library includes in-memory log storage capabilities, providing robust logging for all canister functions including asynchronous operations.
 
 
 ## Features
@@ -71,6 +71,10 @@ cd tests && ./run_test.sh
 # Run linters
 ./run_linters.sh
 ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
