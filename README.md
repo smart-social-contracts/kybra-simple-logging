@@ -1,5 +1,6 @@
 # Kybra Simple Logging
 
+[![Test IC](https://github.com/smart-social-contracts/kybra-simple-logging/actions/workflows/test_ic.yml/badge.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/actions)
 [![Test](https://github.com/smart-social-contracts/kybra-simple-logging/actions/workflows/test.yml/badge.svg)](https://github.com/smart-social-contracts/kybra-simple-logging/actions)
 [![PyPI version](https://badge.fury.io/py/kybra-simple-logging.svg)](https://badge.fury.io/py/kybra-simple-logging)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3107/)
