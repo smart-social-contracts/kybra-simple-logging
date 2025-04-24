@@ -11,7 +11,7 @@ setup(
     description="A robust logging system for Internet Computer canisters built with Kybra",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/smart-social-contracts/kybra_simple_logging",
+    url="https://github.com/smart-social-contracts/kybra-simple-logging",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.10",

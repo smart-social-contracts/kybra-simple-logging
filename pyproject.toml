@@ -26,7 +26,7 @@ requires-python = "==3.10.7"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/smart-social-contracts/kybra_simple_logging"
+Homepage = "https://github.com/smart-social-contracts/kybra-simple-logging"
 Repository = "https://github.com/smart-social-contracts/kybra-simple-logging.git"
 Issues = "https://github.com/smart-social-contracts/kybra-simple-logging/issues"
 
