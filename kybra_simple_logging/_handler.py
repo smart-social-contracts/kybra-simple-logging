@@ -343,19 +343,18 @@ def set_max_log_entries(max_entries: int) -> None:
 
 try:
     # Add Kybra imports for the query function
-    from kybra import query, Vec, Record, Opt
+    from kybra import Vec, Record, Opt, nat
     
     # Define a public-facing LogEntry type for queries
     class PublicLogEntry(Record):
         """Public-facing log entry type for canister queries"""
-        timestamp: float
+        timestamp: nat
         level: str
         logger_name: str
         message: str
-        id: int
+        id: nat
     
-    @query
-    def get_canister_logs(
+    def get_canister_logs_internal(
         max_entries: Opt[int] = None,
         min_level: Opt[str] = None,
         logger_name: Opt[str] = None,

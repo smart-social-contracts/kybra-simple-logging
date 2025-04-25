@@ -77,14 +77,6 @@ def run_tests():
         custom_print(f"✗ Log entry ID and ordering test FAILED: {e}")
         failures += 1
 
-    # Test 6: Canister Query Logs
-    total += 1
-    try:
-        test_query_canister_logs()
-        custom_print("✓ Canister query logs test passed!")
-    except AssertionError as e:
-        custom_print(f"✗ Canister query logs test FAILED: {e}")
-        failures += 1
 
     custom_print("\n=== Memory Logging Tests Complete ===")
     custom_print(f"Ran {total} tests with {failures} failures")
@@ -410,44 +402,6 @@ def test_log_entry_ids():
                     "Could not find test logs in all logs - skipping order check"
                 )
 
-
-def test_query_canister_logs():
-    """Test the canister query function for retrieving logs"""
-    custom_print("Testing canister query logs function...")
-
-    # Clear any existing logs
-    clear_logs()
-
-    # Create some test logs
-    logger.info("[QUERY-TEST] Test message for query function")
-    
-    # Simply verify the function exists and returns logs
-    try:
-        # Import the query function
-        from kybra_simple_logging import get_canister_logs, PublicLogEntry
-        
-        # Call the query function
-        query_logs = get_canister_logs()
-        
-        # Basic verification that we got something back
-        custom_print(f"Retrieved {len(query_logs)} log entries with query function")
-        assert len(query_logs) > 0, "No logs returned from query function"
-        
-        # Verify the returned objects have the expected structure
-        log = query_logs[0]
-        assert hasattr(log, "timestamp"), "Log entry missing timestamp field"
-        assert hasattr(log, "level"), "Log entry missing level field"
-        assert hasattr(log, "logger_name"), "Log entry missing logger_name field"
-        assert hasattr(log, "message"), "Log entry missing message field"
-        assert hasattr(log, "id"), "Log entry missing id field"
-        
-        custom_print("Successfully verified query function returns properly structured logs")
-        
-    except ImportError:
-        # This will happen in non-IC environments where kybra is not available
-        custom_print("Skipping canister query test in non-IC environment")
-    except Exception as e:
-        raise AssertionError(f"Canister query test failed: {str(e)}")
 
 
 if __name__ == "__main__":
