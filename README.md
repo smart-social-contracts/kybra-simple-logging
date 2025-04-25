@@ -56,19 +56,19 @@ The package includes a command-line tool for querying logs from canisters:
 
 ```bash
 # View all logs from a canister
-dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai
+ksl rrkah-fqaaa-aaaaa-aaaaq-cai
 
 # Show only the last 10 logs
-dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --tail 10
+ksl rrkah-fqaaa-aaaaa-aaaaq-cai --tail 10
 
 # Show only ERROR logs
-dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --level ERROR
+ksl rrkah-fqaaa-aaaaa-aaaaq-cai --level ERROR
 
 # Follow logs (continuously poll)
-dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --follow
+ksl rrkah-fqaaa-aaaaa-aaaaq-cai --follow
 
 # Connect to mainnet
-dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --ic
+ksl rrkah-fqaaa-aaaaa-aaaaq-cai --ic
 ```
 
 To use this CLI with your canister, expose the query function:

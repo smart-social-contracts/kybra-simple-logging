@@ -16,10 +16,9 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/smart-social-contracts/kybra-simple-logging",
     packages=find_packages(),
-    py_modules=["dfx_logs"],  # Include the CLI module
     entry_points={
         "console_scripts": [
-            "dfx-logs=dfx_logs:main",  # Register the CLI command
+            "ksl=kybra_simple_logging.cli:main",  # Register the CLI command with new name
         ],
     },
     classifiers=[
