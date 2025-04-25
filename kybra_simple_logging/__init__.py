@@ -20,7 +20,17 @@ from ._handler import (  # Function to check memory logging status
     is_memory_logging_enabled,
 )
 
+# New canister query function for exposing logs
+try:
+    from ._handler import PublicLogEntry  # Public log entry type for canister queries
+    from ._handler import get_canister_logs  # Query function to expose logs via canister query
+except ImportError:
+    # If kybra isn't available, these imports will fail
+    # This allows the library to be used in non-IC environments
+    pass
+
 # This allows imports like:
 # from kybra_simple_logging import logger, get_logger, set_log_level
 # from kybra_simple_logging import save_var, load_var, list_vars
 # from kybra_simple_logging import get_logs, clear_logs, set_max_log_entries, enable_memory_logging, disable_memory_logging
+# from kybra_simple_logging import PublicLogEntry, get_canister_logs
