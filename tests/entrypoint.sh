@@ -54,6 +54,24 @@ else
   echo "run_memory_logs_test test passed!"
 fi
 
+# Test the canister query function directly
+echo "Testing get_canister_logs query function..."
+# Generate some logs first
+dfx canister call test run_test basic_logging > /dev/null
+
+# Call the query function directly
+QUERY_RESULT=$(dfx canister call test get_canister_logs)
+LOG_COUNT=$(echo "$QUERY_RESULT" | grep -o "record" | wc -l)
+
+echo "Retrieved $LOG_COUNT log entries via query function"
+if [ "$LOG_COUNT" -lt 1 ]; then
+  echo " Error: get_canister_logs query returned no logs"
+  dfx stop
+  exit 1
+else
+  echo " get_canister_logs query test passed!"
+fi
+
 echo "Stopping dfx..."
 dfx stop
 
