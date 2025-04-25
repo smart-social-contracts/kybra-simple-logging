@@ -50,6 +50,56 @@ error_logs = get_logs(min_level="ERROR")
 component_logs = get_logs(logger_name="my_component")
 ```
 
+## CLI Tool
+
+The package includes a command-line tool for querying logs from canisters:
+
+```bash
+# View all logs from a canister
+dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai
+
+# Show only the last 10 logs
+dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --tail 10
+
+# Show only ERROR logs
+dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --level ERROR
+
+# Follow logs (continuously poll)
+dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --follow
+
+# Connect to mainnet
+dfx-logs rrkah-fqaaa-aaaaa-aaaaq-cai --ic
+```
+
+To use this CLI with your canister, expose the query function:
+
+```python
+from kybra import query, Record, Opt, Vec
+from kybra_simple_logging import get_canister_logs_internal
+
+class PublicLogEntry(Record):
+    timestamp: float
+    level: str
+    logger_name: str
+    message: str
+    id: int
+
+@query
+def get_canister_logs(
+    max_entries: Opt[int] = None,
+    min_level: Opt[str] = None,
+    logger_name: Opt[str] = None,
+) -> Vec[PublicLogEntry]:
+    logs = get_canister_logs_internal(max_entries, min_level, logger_name)
+    return [PublicLogEntry(
+        timestamp=log.timestamp,
+        level=log.level,
+        logger_name=log.logger_name,
+        message=log.message,
+        id=log.id
+    ) for log in logs]
+```
+
 ## Development
 
 ```bash
