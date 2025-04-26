@@ -112,6 +112,8 @@ pyenv install 3.10.7
 pyenv local 3.10.7
 python -m venv venv
 source venv/bin/activate
+pip install kybra
+python -m kybra install-dfx-extension
 
 # Install development dependencies
 pip install -r requirements-dev.txt

@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "ksl=kybra_simple_logging.cli:main",  # Register the CLI command with new name
+            "kslog=kybra_simple_logging.cli:main",  # Register the CLI command with new name
         ],
     },
     classifiers=[

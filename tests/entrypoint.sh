@@ -74,11 +74,7 @@ fi
 
 # Install the package to test the CLI tool
 echo "Installing kybra-simple-logging package with CLI tool..."
-cd /app
-
-sleep 99999
-
-pip install -e .
+cd src && pip install . && cd ..
 
 # Test the CLI tool
 echo "Testing CLI tool..."
@@ -89,7 +85,7 @@ CANISTER_ID=$(dfx canister id test)
 
 # Run simple test to fetch logs using CLI
 echo "Testing CLI basic functionality..."
-ksl $CANISTER_ID --tail 5 > /tmp/cli_test_output.txt
+kslog $CANISTER_ID --tail 5 > /tmp/cli_test_output.txt
 
 # Check the output
 LOG_COUNT=$(cat /tmp/cli_test_output.txt | wc -l)
@@ -107,10 +103,5 @@ rm -f /tmp/cli_level_test.txt
 
 echo "Stopping dfx..."
 dfx stop
-
-# Clean up log files
-echo "Cleaning up log files..."
-rm -f /tmp/log.txt
-rm -f src/.test_logs.json
 
 echo "All done!"
