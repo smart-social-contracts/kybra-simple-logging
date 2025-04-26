@@ -343,49 +343,51 @@ def set_max_log_entries(max_entries: int) -> None:
 
 try:
     # Add Kybra imports for the query function
-    from kybra import Vec, Record, Opt, nat
-    
+    from kybra import Opt, Record, Vec, nat
+
     # Define a public-facing LogEntry type for queries
     class PublicLogEntry(Record):
         """Public-facing log entry type for canister queries"""
+
         timestamp: nat
         level: str
         logger_name: str
         message: str
         id: nat
-    
+
     def get_canister_logs_internal(
         max_entries: Opt[int] = None,
         min_level: Opt[str] = None,
         logger_name: Opt[str] = None,
     ) -> Vec[PublicLogEntry]:
         """Query function to retrieve logs from the canister
-        
+
         This function can be called externally via a canister query call.
-        
+
         Args:
             max_entries: Maximum number of entries to return
             min_level: Minimum log level to include
             logger_name: Filter logs to a specific logger
-            
+
         Returns:
             List of log entries
         """
         # Use the existing get_logs function
         logs = get_logs(
-            max_entries=max_entries,
-            min_level=min_level,
-            logger_name=logger_name
+            max_entries=max_entries, min_level=min_level, logger_name=logger_name
         )
-        
+
         # Convert to PublicLogEntry objects
-        return [PublicLogEntry(
-            timestamp=log['timestamp'],
-            level=log['level'],
-            logger_name=log['logger_name'],
-            message=log['message'],
-            id=log['id']
-        ) for log in logs]
+        return [
+            PublicLogEntry(
+                timestamp=log["timestamp"],
+                level=log["level"],
+                logger_name=log["logger_name"],
+                message=log["message"],
+                id=log["id"],
+            )
+            for log in logs
+        ]
 
 except ImportError:
     # If kybra isn't available, we don't expose the query function

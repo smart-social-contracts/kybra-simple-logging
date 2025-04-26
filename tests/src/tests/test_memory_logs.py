@@ -77,7 +77,6 @@ def run_tests():
         custom_print(f"✗ Log entry ID and ordering test FAILED: {e}")
         failures += 1
 
-
     custom_print("\n=== Memory Logging Tests Complete ===")
     custom_print(f"Ran {total} tests with {failures} failures")
 
@@ -401,7 +400,6 @@ def test_log_entry_ids():
                 custom_print(
                     "Could not find test logs in all logs - skipping order check"
                 )
-
 
 
 if __name__ == "__main__":
