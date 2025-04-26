@@ -8,7 +8,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="kybra_simple_logging",
-    version="0.1.5",  # Increment version for new CLI feature
+    version="0.1.4",  # Increment version for new CLI feature
     author="Smart Social Contracts",
     author_email="smartsocialcontracts@gmail.com",
     description="A robust logging system for Internet Computer canisters built with Kybra",

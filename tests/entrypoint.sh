@@ -72,11 +72,34 @@ else
   echo " get_canister_logs query test passed!"
 fi
 
-# Skipping CLI tests in Docker environment
-echo "CLI tests will be run locally instead of in Docker"
+# Install the package to test the CLI tool
+echo "Installing kybra-simple-logging package with CLI tool..."
+cd /app
 
-# Mark test as passed for this environment
-echo " CLI tests skipped for Docker environment"
+sleep 99999
+
+pip install -e .
+
+# Test the CLI tool
+echo "Testing CLI tool..."
+
+# Create some logs for testing
+dfx canister call test run_test basic_logging > /dev/null
+CANISTER_ID=$(dfx canister id test)
+
+# Run simple test to fetch logs using CLI
+echo "Testing CLI basic functionality..."
+ksl $CANISTER_ID --tail 5 > /tmp/cli_test_output.txt
+
+# Check the output
+LOG_COUNT=$(cat /tmp/cli_test_output.txt | wc -l)
+if [ "$LOG_COUNT" -lt 1 ]; then
+  echo " Error: CLI returned no logs"
+  dfx stop
+  exit 1
+else
+  echo " CLI basic test passed!"
+fi
 
 # Clean up test output
 rm -f /tmp/cli_test_output.txt
