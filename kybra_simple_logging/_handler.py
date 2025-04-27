@@ -248,7 +248,7 @@ def get_logs(
     from_entry: Optional[int] = None,
     max_entries: Optional[int] = None,
     min_level: Optional[LogLevel] = None,
-    logger_name: Optional[str] = None
+    logger_name: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
 
@@ -265,9 +265,13 @@ def get_logs(
     logs = list(_LOG_STORAGE)
 
     logs = [
-        log for log in logs
+        log
+        for log in logs
         if (from_entry is None or log.id >= from_entry)
-        and (min_level is None or LEVEL_VALUES.get(log.level, 0) >= LEVEL_VALUES.get(min_level, 0))
+        and (
+            min_level is None
+            or LEVEL_VALUES.get(log.level, 0) >= LEVEL_VALUES.get(min_level, 0)
+        )
         and (logger_name is None or log.logger_name == logger_name)
     ]
 
@@ -343,7 +347,7 @@ try:
 
     @query
     def get_canister_logs(
-        from_entry: Opt[int] = None,    
+        from_entry: Opt[int] = None,
         max_entries: Opt[int] = None,
         min_level: Opt[str] = None,
         logger_name: Opt[str] = None,
@@ -365,7 +369,7 @@ try:
             from_entry=from_entry,
             max_entries=max_entries,
             min_level=min_level,
-            logger_name=logger_name
+            logger_name=logger_name,
         )
 
         # Convert to PublicLogEntry objects

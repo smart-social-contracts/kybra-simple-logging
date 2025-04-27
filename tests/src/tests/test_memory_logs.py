@@ -327,13 +327,13 @@ def test_log_entry_ids():
 
     # Test logs are returned in order by ID (ascending order)
     logs = get_logs(logger_name="id_test")
-    message_order = [
-        int(log["message"].split()[-1]) for log in logs
-    ]
+    message_order = [int(log["message"].split()[-1]) for log in logs]
     custom_print(f"Log order by ID: {message_order}")
 
     # Verify logs are in ascending ID order (oldest first)
-    assert message_order == sorted(message_order), "Logs should be in ascending ID order"
+    assert message_order == sorted(
+        message_order
+    ), "Logs should be in ascending ID order"
 
     # Verify IDs are sequential
     for i in range(len(logs) - 1):
