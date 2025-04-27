@@ -63,30 +63,50 @@ kslog <CANISTER_ID> --tail 10 --level ERROR --name MY_LOGGER_NAME --follow --ic 
 To use this `kslog` with your canister, expose the query function:
 
 ```python
-from kybra import query, Record, Opt, Vec
-from kybra_simple_logging import get_canister_logs_internal
+# ##### Import Kybra and the internal function #####
 
+from kybra import Opt, Record, Vec, nat, query
+from kybra_simple_logging import get_canister_logs as _get_canister_logs
+
+
+# Define the PublicLogEntry class directly in the test canister
 class PublicLogEntry(Record):
-    timestamp: float
+    timestamp: nat
     level: str
     logger_name: str
     message: str
-    id: int
+    id: nat
+
 
 @query
 def get_canister_logs(
-    max_entries: Opt[int] = None,
-    min_level: Opt[str] = None,
-    logger_name: Opt[str] = None,
+        from_entry: Opt[nat] = None,
+        max_entries: Opt[nat] = None,
+        min_level: Opt[str] = None,
+        logger_name: Opt[str] = None,
 ) -> Vec[PublicLogEntry]:
-    logs = get_canister_logs_internal(max_entries, min_level, logger_name)
-    return [PublicLogEntry(
-        timestamp=log.timestamp,
-        level=log.level,
-        logger_name=log.logger_name,
-        message=log.message,
-        id=log.id
-    ) for log in logs]
+    """
+    Re-export the get_canister_logs query function from the library
+    This makes it accessible as a query method on the test canister
+    """
+    logs = _get_canister_logs(
+        from_entry=from_entry,
+        max_entries=max_entries,
+        min_level=min_level,
+        logger_name=logger_name
+    )
+
+    # Convert the logs to our local PublicLogEntry type
+    return [
+        PublicLogEntry(
+            timestamp=log["timestamp"],
+            level=log["level"],
+            logger_name=log["logger_name"],
+            message=log["message"],
+            id=log["id"],
+        )
+        for log in logs
+    ]
 ```
 
 ## Development

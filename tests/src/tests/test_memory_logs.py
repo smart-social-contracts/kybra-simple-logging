@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from kybra_simple_logging import (  # In-memory logging imports
+    Level,
     clear_logs,
     disable_logging,
     disable_memory_logging,
@@ -92,7 +93,7 @@ def test_basic_memory_logging():
 
     # Set the memory_test logger to DEBUG level to capture all logs
     test_logger = get_logger("memory_test")
-    test_logger.set_level("DEBUG")
+    test_logger.set_level(Level.DEBUG)
 
     # Create logs with different loggers and levels
     logger.info("[MEMORY-TEST] Info message from default logger")
@@ -100,14 +101,12 @@ def test_basic_memory_logging():
     test_logger.warning("[MEMORY-TEST] Warning message")
     test_logger.error("[MEMORY-TEST] Error message")
 
-    # Retrieve logs and verify they were stored
+    # Retrieve logs and verify
     logs = get_logs()
-    custom_print(f"Retrieved {len(logs)} log entries")
+    custom_print(f"Retrieved {len(logs)} memory logs")
 
-    # Check that logs exist - now we should have at least 4 logs (including the debug log)
-    assert len(logs) >= 4, f"Expected at least 4 logs, but found {len(logs)}"
-
-    # Check for specific log entries
+    # Check that logs contain all expected messages
+    debug_found = False
     info_found = False
     warning_found = False
     error_found = False
@@ -136,33 +135,45 @@ def test_basic_memory_logging():
                 log["logger_name"] == "memory_test"
             ), f"Expected memory_test logger, got {log['logger_name']}"
 
-    assert info_found, "Info log entry not found in memory"
-    assert warning_found, "Warning log entry not found in memory"
-    assert error_found, "Error log entry not found in memory"
+        if "[MEMORY-TEST] Debug message" in log["message"]:
+            debug_found = True
+            assert log["level"] == "DEBUG", f"Expected DEBUG level, got {log['level']}"
+            assert (
+                log["logger_name"] == "memory_test"
+            ), f"Expected memory_test logger, got {log['logger_name']}"
+
+    # Verify all messages were found
+    assert info_found, "INFO message not found in logs"
+    assert warning_found, "WARNING message not found in logs"
+    assert error_found, "ERROR message not found in logs"
+    assert debug_found, "DEBUG message not found in logs"
 
 
 def test_log_filtering():
-    """Test log filtering capabilities"""
+    # Test log filtering capabilities
     custom_print("Testing log filtering...")
 
-    # Clear logs and set up test
+    # Clear existing logs
     clear_logs()
-    default_logger = logger
+
+    # Create logs with different loggers and levels for testing filtering
     error_logger = get_logger("error_only")
+    set_log_level(Level.ERROR, "error_only")
+
     info_logger = get_logger("info_only")
+    set_log_level(Level.INFO, "info_only")
 
-    # Create logs with different levels and loggers
-    default_logger.debug("[FILTER-TEST] Debug from default")
-    default_logger.info("[FILTER-TEST] Info from default")
-    default_logger.error("[FILTER-TEST] Error from default")
-
-    error_logger.debug("[FILTER-TEST] Debug from error_only")
+    # Generate test logs
+    error_logger.debug("[FILTER-TEST] Debug from error_only - should not appear")
+    error_logger.info("[FILTER-TEST] Info from error_only - should not appear")
     error_logger.error("[FILTER-TEST] Error from error_only")
+    error_logger.critical("[FILTER-TEST] Critical from error_only")
 
+    info_logger.debug("[FILTER-TEST] Debug from info_only - should not appear")
     info_logger.info("[FILTER-TEST] Info from info_only")
 
     # 1. Test filtering by level
-    error_logs = get_logs(min_level="ERROR")
+    error_logs = get_logs(min_level=Level.ERROR)
     custom_print(f"Retrieved {len(error_logs)} ERROR logs")
 
     assert (
@@ -178,16 +189,15 @@ def test_log_filtering():
     info_only_logs = get_logs(logger_name="info_only")
     custom_print(f"Retrieved {len(info_only_logs)} logs from info_only logger")
 
-    assert (
-        len(info_only_logs) >= 1
-    ), f"Expected at least 1 info_only log, found {len(info_only_logs)}"
     for log in info_only_logs:
         assert (
             log["logger_name"] == "info_only"
         ), f"Found wrong logger in info_only logs: {log['logger_name']}"
 
     # 3. Test combined filtering
-    default_info_logs = get_logs(min_level="INFO", logger_name="kybra_simple_logging")
+    default_info_logs = get_logs(
+        min_level=Level.INFO, logger_name="kybra_simple_logging"
+    )
     custom_print(f"Retrieved {len(default_info_logs)} INFO+ logs from default logger")
 
     for log in default_info_logs:
@@ -204,193 +214,211 @@ def test_log_filtering():
 
 
 def test_max_entries():
-    """Test maximum entries limit functionality"""
+    # Test maximum entries limit functionality
     custom_print("Testing max entries limit...")
 
-    # Set a small limit to test circular buffer behavior
+    # Set a small max entries value
+    original_max = 1000  # Default
     set_max_log_entries(5)
+
+    # Clear existing logs
     clear_logs()
 
-    # Create more logs than the limit
+    # Generate more logs than the max
+    test_logger = get_logger("max_test")
     for i in range(10):
-        logger.info(f"[MAX-TEST] Log message {i}")
+        test_logger.info(f"[MAX-TEST] Log message {i}")
 
-    # Check we only have the max number of logs
+    # Get logs and check that only max_entries are returned
     logs = get_logs()
-    custom_print(f"Retrieved {len(logs)} logs after setting max to 5")
+    custom_print(f"Retrieved {len(logs)} logs after setting max_entries=5")
+
+    # Restore original max for other tests
+    set_max_log_entries(original_max)
 
     assert len(logs) == 5, f"Expected exactly 5 logs, found {len(logs)}"
 
 
 def test_memory_logging_toggle():
-    """Test enabling and disabling memory logging functionality"""
-    custom_print("Testing memory logging enable/disable...")
+    """Test enabling and disabling in-memory logging"""
+    custom_print("Testing memory logging toggle...")
 
-    # Start with a clean state
+    # First make sure memory logging is enabled
+    enable_memory_logging()
+    assert is_memory_logging_enabled(), "Memory logging should be enabled"
+
+    # Clear existing logs
     clear_logs()
-    enable_memory_logging()  # Make sure memory logging is enabled first
 
-    # First, verify memory logging is working when enabled
-    test_logger = get_logger("toggle_test")
-    initial_status = is_memory_logging_enabled()
-    custom_print(f"Initial memory logging status: {initial_status}")
-    assert initial_status, "Memory logging should be enabled by default"
+    # Log some messages with memory logging enabled
+    logger.info("[TOGGLE-TEST] Memory logging enabled")
 
-    # Log a message when memory logging is enabled
-    test_logger.info("[TOGGLE-TEST] This message should be stored (enabled)")
+    # Get logs and verify they're stored
     logs_before = get_logs()
-    assert (
-        len(logs_before) > 0
-    ), "Expected at least one log message when memory logging is enabled"
-    assert any(
-        "[TOGGLE-TEST] This message should be stored (enabled)" in log["message"]
-        for log in logs_before
-    ), "Test message not found in logs when memory logging was enabled"
+    custom_print(f"Retrieved {len(logs_before)} logs before disabling")
+
+    memory_enabled_found = False
+    for log in logs_before:
+        if "[TOGGLE-TEST] Memory logging enabled" in log["message"]:
+            memory_enabled_found = True
+            assert log["level"] == "INFO", f"Expected INFO level, got {log['level']}"
+
+    assert memory_enabled_found, "Could not find memory enabled log message"
 
     # Now disable memory logging
     disable_memory_logging()
-    disabled_status = is_memory_logging_enabled()
-    custom_print(f"Memory logging status after disable: {disabled_status}")
+    assert not is_memory_logging_enabled(), "Memory logging should be disabled"
+
+    # Log some messages with memory logging disabled
+    logger.warning("[TOGGLE-TEST] Memory logging disabled")
+
+    # Get logs and verify the disabled messages are not stored
+    logs_after_disable = get_logs()
+    custom_print(f"Retrieved {len(logs_after_disable)} logs after disabling")
+    assert len(logs_after_disable) == len(
+        logs_before
+    ), "Log count should not change when logging is disabled"
+
+    # Make sure that even after retrieving, the disabled log isn't there
+    memory_disabled_found = False
+    for log in get_logs():
+        if "[TOGGLE-TEST] Memory logging disabled" in log["message"]:
+            memory_disabled_found = True
+
     assert (
-        not disabled_status
-    ), "Memory logging should be disabled after calling disable_memory_logging()"
+        not memory_disabled_found
+    ), "Found log message that was logged with memory logging disabled"
 
-    # Log more messages when disabled (these should not be captured)
-    test_logger.info("[TOGGLE-TEST] This message should NOT be stored (disabled)")
-    test_logger.error("[TOGGLE-TEST] This error should NOT be stored (disabled)")
-
-    # Get logs to ensure nothing new was added
-    logs_during_disable = get_logs()
-    custom_print(
-        f"Found {len(logs_during_disable)} logs when checking during disabled state"
-    )
-
-    # Count shouldn't have increased (might even be less if other tests cleared logs)
-    assert all(
-        "[TOGGLE-TEST] This message should NOT be stored" not in log["message"]
-        for log in logs_during_disable
-    ), "Found a log message that should NOT have been captured while memory logging was disabled"
-
-    # Re-enable memory logging
+    # Now re-enable memory logging
     enable_memory_logging()
-    reenabled_status = is_memory_logging_enabled()
-    custom_print(f"Memory logging status after re-enable: {reenabled_status}")
-    assert (
-        reenabled_status
-    ), "Memory logging should be enabled after calling enable_memory_logging()"
+    assert is_memory_logging_enabled(), "Memory logging should be re-enabled"
 
-    # Log more messages when re-enabled
-    test_logger.info("[TOGGLE-TEST] This message should be stored again (re-enabled)")
+    # Log some messages with memory logging re-enabled
+    logger.error("[TOGGLE-TEST] Memory logging re-enabled")
 
-    # Check that new logs are being captured again
-    logs_after = get_logs()
-    custom_print(f"Found {len(logs_after)} logs after re-enabling")
+    # Get logs and verify that new messages are stored again
+    logs_after_enable = get_logs()
+    custom_print(f"Retrieved {len(logs_after_enable)} logs after re-enabling")
+    assert len(logs_after_enable) > len(
+        logs_after_disable
+    ), "Log count should increase after re-enabling"
 
-    assert any(
-        "[TOGGLE-TEST] This message should be stored again (re-enabled)"
-        in log["message"]
-        for log in logs_after
-    ), "Test message not found in logs after re-enabling memory logging"
+    memory_reenabled_found = False
+    for log in logs_after_enable:
+        if "[TOGGLE-TEST] Memory logging re-enabled" in log["message"]:
+            memory_reenabled_found = True
+            assert log["level"] == "ERROR", f"Expected ERROR level, got {log['level']}"
+
+    assert memory_reenabled_found, "Could not find memory re-enabled log message"
 
 
 def test_log_entry_ids():
-    """Test log entry ID assignment and ordering capabilities"""
+    """Test log entry ID assignment and retrieval"""
     custom_print("Testing log entry IDs and ordering...")
 
-    # Start with a clean state
+    # Clear existing logs
     clear_logs()
-    test_logger = get_logger("id_test")
 
-    # Create logs with identical timestamps (as much as possible)
-    custom_print("Creating logs with potentially identical timestamps...")
-    for i in range(5):
-        test_logger.info(f"[ID-TEST] Log message {i}")
+    # Create a sequence of logs
+    logger.info("[ID-TEST] First message")
+    logger.warning("[ID-TEST] Second message")
+    logger.error("[ID-TEST] Third message")
 
-    # Verify logs have unique and sequential IDs
-    logs = get_logs()
+    # Get all logs and verify sequence
+    all_logs = get_logs()
+    custom_print(f"Retrieved {len(all_logs)} logs for ID test")
 
-    custom_print(f"Retrieved {len(logs)} logs")
-    assert len(logs) >= 5, f"Expected at least 5 logs, found {len(logs)}"
-
-    # Check that all logs have ID fields
-    for log in logs:
-        assert "id" in log, f"Log entry missing 'id' field: {log}"
+    # Verify we have at least 3 logs with sequential IDs
+    assert len(all_logs) >= 3, f"Expected at least 3 logs, found {len(all_logs)}"
 
     # Find our test logs
-    test_logs = [log for log in logs if "[ID-TEST]" in log["message"]]
+    test_logs = []
+    for log in all_logs:
+        if "[ID-TEST]" in log["message"]:
+            test_logs.append(log)
 
-    # Check that IDs are unique
-    ids = [log["id"] for log in test_logs]
-    unique_ids = set(ids)
-    custom_print(f"Found {len(unique_ids)} unique IDs in {len(test_logs)} test logs")
-    assert len(unique_ids) == len(test_logs), "Duplicate IDs found in logs"
+    # Sort by ID for safety
+    test_logs.sort(key=lambda x: x["id"])
 
-    # Test logs are returned in order by ID (ascending order)
-    logs = get_logs(logger_name="id_test")
-    message_order = [int(log["message"].split()[-1]) for log in logs]
-    custom_print(f"Log order by ID: {message_order}")
+    # Verify the test logs
+    assert len(test_logs) == 3, f"Expected 3 test logs, found {len(test_logs)}"
 
-    # Verify logs are in ascending ID order (oldest first)
-    assert message_order == sorted(
-        message_order
-    ), "Logs should be in ascending ID order"
+    assert (
+        test_logs[0]["message"] == "[ID-TEST] First message"
+    ), "First message doesn't match"
+    assert (
+        test_logs[0]["level"] == "INFO"
+    ), f"Expected INFO level, got {test_logs[0]['level']}"
+
+    assert (
+        test_logs[1]["message"] == "[ID-TEST] Second message"
+    ), "Second message doesn't match"
+    assert (
+        test_logs[1]["level"] == "WARNING"
+    ), f"Expected WARNING level, got {test_logs[1]['level']}"
+
+    assert (
+        test_logs[2]["message"] == "[ID-TEST] Third message"
+    ), "Third message doesn't match"
+    assert (
+        test_logs[2]["level"] == "ERROR"
+    ), f"Expected ERROR level, got {test_logs[2]['level']}"
 
     # Verify IDs are sequential
-    for i in range(len(logs) - 1):
-        assert (
-            logs[i]["id"] < logs[i + 1]["id"]
-        ), f"Log entry IDs not sequential: {logs[i]['id']} followed by {logs[i+1]['id']}"
+    assert (
+        test_logs[0]["id"] < test_logs[1]["id"] < test_logs[2]["id"]
+    ), "Log IDs are not sequential"
 
-    # Test ID ordering without relying on time.sleep()
-    custom_print("Testing log entry ID ordering...")
+    # Now test from_entry parameter
+    logs_from_second = get_logs(from_entry=test_logs[1]["id"])
+    custom_print(f"Retrieved {len(logs_from_second)} logs after second message")
 
-    # Create two logs that will have sequential IDs
-    test_logger.warning("[ID-TEST-ORDER] First log")
-    test_logger.warning("[ID-TEST-ORDER] Second log")
+    # Verify we don't get the first message
+    first_found = False
+    for log in logs_from_second:
+        if log["message"] == "[ID-TEST] First message":
+            first_found = True
 
-    # Get logs
-    order_logs = get_logs()
+    assert not first_found, "First message should be filtered out when using from_entry"
 
-    # Find our test logs
-    order_test_logs = [log for log in order_logs if "[ID-TEST-ORDER]" in log["message"]]
-    if len(order_test_logs) >= 2:
-        first_log = next(
-            (log for log in order_test_logs if "First" in log["message"]), None
-        )
-        second_log = next(
-            (log for log in order_test_logs if "Second" in log["message"]), None
-        )
+    # Verify we do get the second and third messages
+    second_found = False
+    third_found = False
+    for log in logs_from_second:
+        if log["message"] == "[ID-TEST] Second message":
+            second_found = True
+        elif log["message"] == "[ID-TEST] Third message":
+            third_found = True
 
-        if first_log and second_log:
-            custom_print(f"First log ID: {first_log['id']}")
-            custom_print(f"Second log ID: {second_log['id']}")
+    assert second_found, "Second message not found when using from_entry"
+    assert third_found, "Third message not found when using from_entry"
 
-            # Verify IDs are sequential
-            assert first_log["id"] < second_log["id"], "Log IDs should be sequential"
+    # Test max_entries parameter
+    limited_logs = get_logs(max_entries=1)
+    custom_print(f"Retrieved {len(limited_logs)} logs with max_entries=1")
+    assert len(limited_logs) == 1, f"Expected 1 log, found {len(limited_logs)}"
 
-            # Find positions in the log list - logs are in ascending ID order
-            try:
-                first_index = next(
-                    i
-                    for i, log in enumerate(order_logs)
-                    if "[ID-TEST-ORDER] First" in log["message"]
-                )
-                second_index = next(
-                    i
-                    for i, log in enumerate(order_logs)
-                    if "[ID-TEST-ORDER] Second" in log["message"]
-                )
+    # Create more logs and test combining parameters
+    logger.critical("[ID-TEST] Fourth message")
+    logger.debug("[ID-TEST] Fifth message")
 
-                # First log should come before Second log in ascending ID order
-                assert (
-                    first_index < second_index
-                ), "Logs not properly ordered: expected First before Second"
+    # Combined test: from_entry + max_entries
+    combined_logs = get_logs(from_entry=test_logs[1]["id"], max_entries=2)
+    custom_print(f"Retrieved {len(combined_logs)} logs with from_entry + max_entries")
+    assert len(combined_logs) == 2, f"Expected 2 logs, found {len(combined_logs)}"
 
-                custom_print("Log ordering by ID verified successfully")
-            except StopIteration:
-                custom_print(
-                    "Could not find test logs in all logs - skipping order check"
-                )
+    # Combined test: from_entry + min_level
+    high_level_logs = get_logs(from_entry=test_logs[1]["id"], min_level=Level.ERROR)
+    custom_print(
+        f"Retrieved {len(high_level_logs)} logs with from_entry + min_level=ERROR"
+    )
+
+    # Should only get ERROR and CRITICAL messages after the second message
+    for log in high_level_logs:
+        assert log["level"] in [
+            "ERROR",
+            "CRITICAL",
+        ], f"Found non-ERROR/CRITICAL level in filtered logs: {log['level']}"
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # Debug variable storage functions
 # New in-memory logging functions
+from ._handler import Level  # Enum for log levels
 from ._handler import LogEntry  # Log entry data class
-from ._handler import LogLevel  # Type for log levels
 from ._handler import SimpleLogger  # The logger class itself
 from ._handler import clear_logs  # Function to clear all logs from memory
 from ._handler import disable_logging  # Function to disable all logging

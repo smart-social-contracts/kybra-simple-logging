@@ -47,7 +47,9 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None, name=None):
+def get_logs(
+    canister_id, tail=None, level=None, network=None, from_entry=None, name=None
+):
     """Query log entries from a canister
 
     Args:
@@ -73,13 +75,13 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None, 
 
     # 1. from_entry parameter
     if from_entry is not None:
-        args.append(f'(opt {from_entry})')
+        args.append(f"(opt {from_entry})")
     else:
         args.append("null")
 
     # 2. tail/max_entries parameter
     if tail is not None:
-        args.append(f'(opt {tail})')
+        args.append(f"(opt {tail})")
     else:
         args.append("null")
 
@@ -163,11 +165,13 @@ def main():
 
     if not args.follow:
         # One-time query
-        logs = get_logs(args.canister_id,
-        tail=args.tail,
-        level=args.level,
-        network=network,
-        name=args.name)
+        logs = get_logs(
+            args.canister_id,
+            tail=args.tail,
+            level=args.level,
+            network=network,
+            name=args.name,
+        )
 
         for log in logs:
             print(format_log(log), flush=True)
@@ -190,11 +194,13 @@ def main():
                     input()
 
                 if first_poll:
-                    logs = get_logs(args.canister_id,
-                    tail=args.tail,
-                    level=args.level,
-                    network=network,
-                    name=args.name)
+                    logs = get_logs(
+                        args.canister_id,
+                        tail=args.tail,
+                        level=args.level,
+                        network=network,
+                        name=args.name,
+                    )
                     first_poll = False
                 else:
                     logs = get_logs(

@@ -7,7 +7,8 @@ import sys
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Any, Callable, Deque, Dict, List, Literal, Optional, Union
+from enum import IntEnum
+from typing import Any, Callable, Deque, Dict, List, Optional, Union
 
 # Global settings
 _LOGGING_ENABLED = True
@@ -22,18 +23,18 @@ _MAX_LOG_ENTRIES = 1000  # Maximum number of log entries to keep in memory
 _LOG_STORAGE: Deque["LogEntry"] = deque(maxlen=_MAX_LOG_ENTRIES)
 _LOG_SEQUENCE_COUNTER = 0  # Global counter for generating unique log entry IDs
 
-# Level type
-LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
-# Level constants
-DEBUG = "DEBUG"
-INFO = "INFO"
-WARNING = "WARNING"
-ERROR = "ERROR"
-CRITICAL = "CRITICAL"
+# Define Level enum
+class Level(IntEnum):
+    DEBUG = 10
+    INFO = 20
+    WARNING = 30
+    ERROR = 40
+    CRITICAL = 50
 
-# Level values for filtering
-LEVEL_VALUES = {DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40, CRITICAL: 50}
+    def __str__(self) -> str:
+        """Return the string representation of the log level"""
+        return self.name
 
 
 @dataclass
@@ -41,7 +42,7 @@ class LogEntry:
     """Represents a single log entry stored in memory"""
 
     timestamp: float
-    level: LogLevel
+    level: Level
     logger_name: str
     message: str
     id: int  # Unique identifier for the log entry
@@ -50,7 +51,7 @@ class LogEntry:
         """Convert log entry to dictionary for serialization"""
         return {
             "timestamp": self.timestamp,
-            "level": self.level,
+            "level": str(self.level),
             "logger_name": self.logger_name,
             "message": self.message,
             "id": self.id,
@@ -58,7 +59,7 @@ class LogEntry:
 
 
 # Define a safe fallback first
-def _print_log(level: str, message: str, logger_name: str) -> None:
+def _print_log(level: Level, message: str, logger_name: str) -> None:
     if not _LOGGING_ENABLED:
         return
     print(f"[{level}] [{logger_name}] {message}")
@@ -66,7 +67,7 @@ def _print_log(level: str, message: str, logger_name: str) -> None:
     _store_log_entry(level, message, logger_name)
 
 
-def _store_log_entry(level: str, message: str, logger_name: str) -> None:
+def _store_log_entry(level: Level, message: str, logger_name: str) -> None:
     """Store a log entry in the memory buffer if memory logging is enabled"""
     if not _MEMORY_LOGGING_ENABLED:
         return
@@ -99,7 +100,7 @@ try:
         _in_ic_environment = True
 
         # Override the print_log function with IC-specific version
-        def _ic_print_log(level: str, message: str, logger_name: str) -> None:
+        def _ic_print_log(level: Level, message: str, logger_name: str) -> None:
             if not _LOGGING_ENABLED:
                 return
             ic.print(f"[{level}] [{logger_name}] {message}")
@@ -107,7 +108,7 @@ try:
             _store_log_entry(level, message, logger_name)
 
         # Define IC-specific version of store_log_entry using ic.time()
-        def _ic_store_log_entry(level: str, message: str, logger_name: str) -> None:
+        def _ic_store_log_entry(level: Level, message: str, logger_name: str) -> None:
             """Store a log entry in the memory buffer if memory logging is enabled"""
             if not _MEMORY_LOGGING_ENABLED:
                 return
@@ -138,40 +139,40 @@ except ImportError:
 
 
 class SimpleLogger:
-    def __init__(self, name: str = "kybra_simple_logger", level: LogLevel = "INFO"):
+    def __init__(self, name: str = "kybra_simple_logger", level: Level = Level.INFO):
         self.name = name
         self.level = level
 
-    def set_level(self, level: LogLevel) -> None:
+    def set_level(self, level: Level) -> None:
         """Set the minimum logging level"""
         self.level = level
 
-    def is_enabled_for(self, level: LogLevel) -> bool:
+    def is_enabled_for(self, level: Level) -> bool:
         """Check if this level should be logged"""
-        return LEVEL_VALUES.get(level, 0) >= LEVEL_VALUES.get(self.level, 0)
+        return int(level) >= int(self.level)
 
-    def log(self, level: LogLevel, message: str) -> None:
+    def log(self, level: Level, message: str) -> None:
         if not self.is_enabled_for(level):
             return
         _print_log(level, message, self.name)
 
     def debug(self, message: str) -> None:
-        self.log(DEBUG, message)
+        self.log(Level.DEBUG, message)
 
     def info(self, message: str) -> None:
-        self.log(INFO, message)
+        self.log(Level.INFO, message)
 
     def warning(self, message: str) -> None:
-        self.log(WARNING, message)
+        self.log(Level.WARNING, message)
 
     def warn(self, message: str) -> None:
         self.warning(message)
 
     def error(self, message: str) -> None:
-        self.log(ERROR, message)
+        self.log(Level.ERROR, message)
 
     def critical(self, message: str) -> None:
-        self.log(CRITICAL, message)
+        self.log(Level.CRITICAL, message)
 
 
 # Public API functions
@@ -182,8 +183,13 @@ def get_logger(name: str = "kybra_simple_logging") -> SimpleLogger:
     return _LOGGERS[name]
 
 
-def set_log_level(level: LogLevel, logger_name: Optional[str] = None) -> None:
-    """Set log level for all loggers or a specific one"""
+def set_log_level(level: Level, logger_name: Optional[str] = None) -> None:
+    """Set log level for all loggers or a specific one
+
+    Args:
+        level: The log level to set (e.g., Level.DEBUG, Level.INFO)
+        logger_name: Optional name of logger to set level for, or None for all loggers
+    """
     if logger_name is not None:
         if logger_name in _LOGGERS:
             _LOGGERS[logger_name].set_level(level)
@@ -247,7 +253,7 @@ logger = get_logger()
 def get_logs(
     from_entry: Optional[int] = None,
     max_entries: Optional[int] = None,
-    min_level: Optional[LogLevel] = None,
+    min_level: Optional[Level] = None,
     logger_name: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
@@ -268,10 +274,7 @@ def get_logs(
         log
         for log in logs
         if (from_entry is None or log.id >= from_entry)
-        and (
-            min_level is None
-            or LEVEL_VALUES.get(log.level, 0) >= LEVEL_VALUES.get(min_level, 0)
-        )
+        and (min_level is None or log.level >= min_level)
         and (logger_name is None or log.logger_name == logger_name)
     ]
 
@@ -368,7 +371,7 @@ try:
         logs = get_logs(
             from_entry=from_entry,
             max_entries=max_entries,
-            min_level=min_level,
+            min_level=None if min_level is None else Level[min_level],
             logger_name=logger_name,
         )
 
