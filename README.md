@@ -19,6 +19,8 @@ A simple logging system for the [Internet Computer](https://internetcomputer.org
 - Ability to enable/disable logging completely
 - Circular buffer to store logs in memory without exhausting memory
 
+![Demo](https://drive.google.com/uc?export=view&id=1iwKYfpeq9WZbDZc-xGwcsGe7u9vKU9vb)
+
 
 ## Installation
 
