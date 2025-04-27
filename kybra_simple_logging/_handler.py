@@ -248,8 +248,7 @@ def get_logs(
     from_entry: Optional[int] = None,
     max_entries: Optional[int] = None,
     min_level: Optional[LogLevel] = None,
-    logger_name: Optional[str] = None,
-    filter_fn: Optional[Callable[[LogEntry], bool]] = None
+    logger_name: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
 
@@ -258,7 +257,6 @@ def get_logs(
         max_entries: Maximum number of entries to return (oldest first by default)
         min_level: Minimum log level to include
         logger_name: Filter logs to a specific logger
-        filter_fn: Custom filter function taking a LogEntry and returning boolean
 
     Returns:
         List of log entries as dictionaries
@@ -271,7 +269,6 @@ def get_logs(
         if (from_entry is None or log.id >= from_entry)
         and (min_level is None or LEVEL_VALUES.get(log.level, 0) >= LEVEL_VALUES.get(min_level, 0))
         and (logger_name is None or log.logger_name == logger_name)
-        and (filter_fn is None or filter_fn(log))
     ]
 
     # Limit the number of entries if requested
@@ -332,7 +329,7 @@ def set_max_log_entries(max_entries: int) -> None:
 
 try:
     # Add Kybra imports for the query function
-    from kybra import Opt, Record, Vec, nat
+    from kybra import Opt, Record, Vec, nat, query
 
     # Define a public-facing LogEntry type for queries
     class PublicLogEntry(Record):
@@ -344,7 +341,9 @@ try:
         message: str
         id: nat
 
-    def get_canister_logs_internal(
+    @query
+    def get_canister_logs(
+        from_entry: Opt[int] = None,    
         max_entries: Opt[int] = None,
         min_level: Opt[str] = None,
         logger_name: Opt[str] = None,
@@ -363,7 +362,10 @@ try:
         """
         # Use the existing get_logs function
         logs = get_logs(
-            max_entries=max_entries, min_level=min_level, logger_name=logger_name
+            from_entry=from_entry,
+            max_entries=max_entries,
+            min_level=min_level,
+            logger_name=logger_name
         )
 
         # Convert to PublicLogEntry objects
