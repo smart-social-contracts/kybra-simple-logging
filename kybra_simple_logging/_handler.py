@@ -280,9 +280,8 @@ def get_logs(
     if filter_fn is not None:
         logs = [log for log in logs if filter_fn(log)]
 
-    # Sort by timestamp and id
-    # When timestamps are identical, id ensures correct order
-    logs.sort(key=lambda log: (log.timestamp, log.id), reverse=not oldest_first)
+    # Sort by sequential counter according to id
+    logs.sort(key=lambda log: log.id, reverse=not oldest_first)
 
     # Limit the number of entries if requested
     if max_entries is not None:
