@@ -3,10 +3,10 @@
 import argparse
 import json
 import os
+import select
 import subprocess
 import sys
 import time
-import select
 from datetime import datetime
 
 
@@ -45,17 +45,17 @@ def parse_args():
 
 def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
     """Query log entries from a canister
-    
+
     Args:
         canister_id: ID of the canister to query
         tail: Maximum number of entries to return (optional)
         level: Minimum log level to include (optional)
         network: Network to query (optional)
         from_entry: Start retrieving logs from this ID (optional)
-        
+
     Returns:
         List of log entries as dictionaries
-    
+
     Note:
         The parameters are passed to the canister in the following order:
         1. from_entry
@@ -65,25 +65,25 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
     """
     # Build the query arguments in the correct order as expected by the canister API
     args = []
-    
+
     # 1. from_entry parameter
     if from_entry is not None:
         args.append(f"(opt {from_entry})")
     else:
         args.append("null")
-    
+
     # 2. tail/max_entries parameter
     if tail is not None:
         args.append(f"(opt {tail})")
     else:
         args.append("null")
-    
+
     # 3. level/min_level parameter
     if level is not None:
         args.append(f'(opt "{level}")')
     else:
         args.append("null")
-    
+
     # 4. logger_name parameter (always null in our CLI)
     args.append("null")
 
@@ -141,8 +141,9 @@ def format_log(log_entry):
 def main():
     # Set stdout to line buffering mode to ensure timely output when piped
     import io
+
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, line_buffering=True)
-    
+
     args = parse_args()
 
     # Determine network option
@@ -164,10 +165,14 @@ def main():
         last_poll_time = 0
         last_log_id = 0
         first_poll = True
-        
+
         while True:
             current_time = time.time()
-            if first_poll or current_time - last_poll_time >= args.interval or select.select([sys.stdin], [], [], 0)[0]:
+            if (
+                first_poll
+                or current_time - last_poll_time >= args.interval
+                or select.select([sys.stdin], [], [], 0)[0]
+            ):
                 if select.select([sys.stdin], [], [], 0)[0]:
                     input()
 
@@ -175,18 +180,24 @@ def main():
                     logs = get_logs(args.canister_id, args.tail, args.level, network)
                     first_poll = False
                 else:
-                    logs = get_logs(args.canister_id, None, args.level, network, from_entry=last_log_id + 1)
+                    logs = get_logs(
+                        args.canister_id,
+                        None,
+                        args.level,
+                        network,
+                        from_entry=last_log_id + 1,
+                    )
 
                 last_poll_time = current_time
-                
+
                 ## Print all logs
                 for log in logs:
-                   print(format_log(log), flush=True)
-                        
+                    print(format_log(log), flush=True)
+
                 # Update the last log ID if we have logs
                 if logs:
                     last_log_id = max(int(log.get("id", 0)) for log in logs)
-            
+
             time.sleep(0.1)
     except KeyboardInterrupt:
         print("\nExiting log follower")
