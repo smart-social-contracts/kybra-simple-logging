@@ -19,8 +19,6 @@ A simple logging system for the [Internet Computer](https://internetcomputer.org
 - Ability to enable/disable logging completely
 - Circular buffer to store logs in memory without exhausting memory
 
-![Demo](https://drive.google.com/uc?export=view&id=1iwKYfpeq9WZbDZc-xGwcsGe7u9vKU9vb)
-
 
 ## Installation
 
@@ -54,26 +52,15 @@ component_logs = get_logs(logger_name="my_component")
 
 ## CLI Tool
 
-The package includes a command-line tool for querying logs from canisters:
+The package includes a command-line tool for querying logs from canisters.
+Example:
 
 ```bash
-# View all logs from a canister
-kslog <CANISTER_ID>
-
-# Show only the last 10 logs
-kslog --tail 10 <CANISTER_ID> 
-
-# Show only ERROR logs
-kslog --level ERROR <CANISTER_ID> 
-
-# Follow logs (continuously poll)
-kslog --follow <CANISTER_ID>
-
-# Connect to mainnet
-kslog --ic <CANISTER_ID>
+# View the first 10 ERROR log entries of logger with name MY_LOGGER_NAME, and then follow and poll every 5 seconds, from the canister with ID <CANISTER_ID> on the IC network
+kslog <CANISTER_ID> --tail 10 --level ERROR --name MY_LOGGER_NAME --follow --ic --interval 5
 ```
 
-To use this CLI with your canister, expose the query function:
+To use this `kslog` with your canister, expose the query function:
 
 ```python
 from kybra import query, Record, Opt, Vec

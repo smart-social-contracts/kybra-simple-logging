@@ -21,6 +21,10 @@ def parse_args():
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         help="Minimum log level to display",
     )
+    parser.add_argument(
+        "--name",
+        help="Filter logs by logger name",
+    )
 
     # Follow mode options
     parser.add_argument(
@@ -43,7 +47,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
+def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None, name=None):
     """Query log entries from a canister
 
     Args:
@@ -52,6 +56,7 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
         level: Minimum log level to include (optional)
         network: Network to query (optional)
         from_entry: Start retrieving logs from this ID (optional)
+        name: Filter logs by logger name (optional)
 
     Returns:
         List of log entries as dictionaries
@@ -61,20 +66,20 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
         1. from_entry
         2. max_entries (tail)
         3. min_level (level)
-        4. logger_name (always null in CLI)
+        4. logger_name (name)
     """
     # Build the query arguments in the correct order as expected by the canister API
     args = []
 
     # 1. from_entry parameter
     if from_entry is not None:
-        args.append(f"(opt {from_entry})")
+        args.append(f'(opt {from_entry})')
     else:
         args.append("null")
 
     # 2. tail/max_entries parameter
     if tail is not None:
-        args.append(f'(opt "{tail}")')
+        args.append(f'(opt {tail})')
     else:
         args.append("null")
 
@@ -84,8 +89,11 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
     else:
         args.append("null")
 
-    # 4. logger_name parameter (always null in our CLI)
-    args.append("null")
+    # 4. logger_name parameter
+    if name is not None:
+        args.append(f'(opt "{name}")')
+    else:
+        args.append("null")
 
     query_args = ", ".join(args)
 
@@ -120,7 +128,7 @@ def format_log(log_entry):
         timestamp = "Unknown time"
 
     level = log_entry.get("level", "UNKNOWN")
-    logger = log_entry.get("logger_name", "unknown")
+    name = log_entry.get("logger_name", "unknown")
     message = log_entry.get("message", "")
     id = log_entry.get("id", "unknown")
 
@@ -135,7 +143,7 @@ def format_log(log_entry):
     reset = "\033[0m"
     color = level_colors.get(level, "")
 
-    return f"{timestamp} [{id}] {color}[{level}]{reset} [{logger}] {message}"
+    return f"{timestamp} [{id}] {color}[{level}]{reset} [{name}] {message}"
 
 
 def main():
@@ -155,7 +163,12 @@ def main():
 
     if not args.follow:
         # One-time query
-        logs = get_logs(args.canister_id, args.tail, args.level, network)
+        logs = get_logs(args.canister_id,
+        tail=args.tail,
+        level=args.level,
+        network=network,
+        name=args.name)
+
         for log in logs:
             print(format_log(log), flush=True)
         return
@@ -177,15 +190,20 @@ def main():
                     input()
 
                 if first_poll:
-                    logs = get_logs(args.canister_id, args.tail, args.level, network)
+                    logs = get_logs(args.canister_id,
+                    tail=args.tail,
+                    level=args.level,
+                    network=network,
+                    name=args.name)
                     first_poll = False
                 else:
                     logs = get_logs(
                         args.canister_id,
-                        None,
-                        args.level,
-                        network,
+                        tail=None,
+                        level=args.level,
+                        network=network,
                         from_entry=last_log_id + 1,
+                        name=args.name,
                     )
 
                 last_poll_time = current_time
