@@ -105,6 +105,15 @@ fi
 rm -f /tmp/cli_test_output.txt
 rm -f /tmp/cli_level_test.txt
 
+# Deploy the example canister
+echo "Deploying example canister..."
+cd /app/kybra-simple-logging-source/example
+dfx deploy
+echo "Example canister deployed successfully!"
+sleep 5
+dfx canister logs kslog_example  # Show example canister logs
+cd /app
+
 echo "Stopping dfx..."
 dfx stop
 
