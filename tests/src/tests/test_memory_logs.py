@@ -325,30 +325,21 @@ def test_log_entry_ids():
     custom_print(f"Found {len(unique_ids)} unique IDs in {len(test_logs)} test logs")
     assert len(unique_ids) == len(test_logs), "Duplicate IDs found in logs"
 
-    # Test newest_first (default) ordering
-    newest_first_logs = get_logs(logger_name="id_test")
-    message_order_newest_first = [
-        int(log["message"].split()[-1]) for log in newest_first_logs
+    # Test logs are returned in order by ID (ascending order)
+    logs = get_logs(logger_name="id_test")
+    message_order = [
+        int(log["message"].split()[-1]) for log in logs
     ]
-    custom_print(f"Newest first order: {message_order_newest_first}")
+    custom_print(f"Log order by ID: {message_order}")
 
-    # Test oldest_first ordering
-    oldest_first_logs = get_logs(logger_name="id_test", oldest_first=True)
-    message_order_oldest_first = [
-        int(log["message"].split()[-1]) for log in oldest_first_logs
-    ]
-    custom_print(f"Oldest first order: {message_order_oldest_first}")
+    # Verify logs are in ascending ID order (oldest first)
+    assert message_order == sorted(message_order), "Logs should be in ascending ID order"
 
-    # Verify the orders are reversed
-    assert (
-        message_order_newest_first != message_order_oldest_first
-    ), "Oldest-first and newest-first orders should be different"
-
-    # Older messages should have smaller IDs
-    for i in range(len(oldest_first_logs) - 1):
+    # Verify IDs are sequential
+    for i in range(len(logs) - 1):
         assert (
-            oldest_first_logs[i]["id"] < oldest_first_logs[i + 1]["id"]
-        ), f"Log entry IDs not sequential: {oldest_first_logs[i]['id']} followed by {oldest_first_logs[i+1]['id']}"
+            logs[i]["id"] < logs[i + 1]["id"]
+        ), f"Log entry IDs not sequential: {logs[i]['id']} followed by {logs[i+1]['id']}"
 
     # Test ID ordering without relying on time.sleep()
     custom_print("Testing log entry ID ordering...")
@@ -357,8 +348,8 @@ def test_log_entry_ids():
     test_logger.warning("[ID-TEST-ORDER] First log")
     test_logger.warning("[ID-TEST-ORDER] Second log")
 
-    # Get logs in oldest first order
-    order_logs = get_logs(oldest_first=True)
+    # Get logs
+    order_logs = get_logs()
 
     # Find our test logs
     order_test_logs = [log for log in order_logs if "[ID-TEST-ORDER]" in log["message"]]
@@ -377,7 +368,7 @@ def test_log_entry_ids():
             # Verify IDs are sequential
             assert first_log["id"] < second_log["id"], "Log IDs should be sequential"
 
-            # Find positions in the log list
+            # Find positions in the log list - logs are in ascending ID order
             try:
                 first_index = next(
                     i
@@ -390,7 +381,7 @@ def test_log_entry_ids():
                     if "[ID-TEST-ORDER] Second" in log["message"]
                 )
 
-                # In oldest_first mode, the First log should come before Second log
+                # First log should come before Second log in ascending ID order
                 assert (
                     first_index < second_index
                 ), "Logs not properly ordered: expected First before Second"

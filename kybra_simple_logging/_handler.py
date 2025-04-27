@@ -22,13 +22,26 @@ _MAX_LOG_ENTRIES = 1000  # Maximum number of log entries to keep in memory
 _LOG_STORAGE: Deque["LogEntry"] = deque(maxlen=_MAX_LOG_ENTRIES)
 _LOG_SEQUENCE_COUNTER = 0  # Global counter for generating unique log entry IDs
 
+# Level type
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+# Level constants
+DEBUG = "DEBUG"
+INFO = "INFO"
+WARNING = "WARNING"
+ERROR = "ERROR"
+CRITICAL = "CRITICAL"
+
+# Level values for filtering
+LEVEL_VALUES = {DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40, CRITICAL: 50}
+
 
 @dataclass
 class LogEntry:
     """Represents a single log entry stored in memory"""
 
     timestamp: float
-    level: str
+    level: LogLevel
     logger_name: str
     message: str
     id: int  # Unique identifier for the log entry
@@ -123,20 +136,8 @@ except ImportError:
     # If kybra isn't available, we're definitely not in an IC environment
     print("Note: Kybra not available, using regular print for logging")
 
-LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
 
 class SimpleLogger:
-    # Level constants
-    DEBUG = "DEBUG"
-    INFO = "INFO"
-    WARNING = "WARNING"
-    ERROR = "ERROR"
-    CRITICAL = "CRITICAL"
-
-    # Level values for filtering
-    LEVEL_VALUES = {DEBUG: 10, INFO: 20, WARNING: 30, ERROR: 40, CRITICAL: 50}
-
     def __init__(self, name: str = "kybra_simple_logger", level: LogLevel = "INFO"):
         self.name = name
         self.level = level
@@ -147,7 +148,7 @@ class SimpleLogger:
 
     def is_enabled_for(self, level: LogLevel) -> bool:
         """Check if this level should be logged"""
-        return self.LEVEL_VALUES.get(level, 0) >= self.LEVEL_VALUES.get(self.level, 0)
+        return LEVEL_VALUES.get(level, 0) >= LEVEL_VALUES.get(self.level, 0)
 
     def log(self, level: LogLevel, message: str) -> None:
         if not self.is_enabled_for(level):
@@ -155,22 +156,22 @@ class SimpleLogger:
         _print_log(level, message, self.name)
 
     def debug(self, message: str) -> None:
-        self.log(self.DEBUG, message)
+        self.log(DEBUG, message)
 
     def info(self, message: str) -> None:
-        self.log(self.INFO, message)
+        self.log(INFO, message)
 
     def warning(self, message: str) -> None:
-        self.log(self.WARNING, message)
+        self.log(WARNING, message)
 
     def warn(self, message: str) -> None:
         self.warning(message)
 
     def error(self, message: str) -> None:
-        self.log(self.ERROR, message)
+        self.log(ERROR, message)
 
     def critical(self, message: str) -> None:
-        self.log(self.CRITICAL, message)
+        self.log(CRITICAL, message)
 
 
 # Public API functions
@@ -244,20 +245,20 @@ logger = get_logger()
 
 # In-memory log retrieval functions
 def get_logs(
+    from_entry: Optional[int] = None,
     max_entries: Optional[int] = None,
     min_level: Optional[LogLevel] = None,
     logger_name: Optional[str] = None,
-    filter_fn: Optional[Callable[[LogEntry], bool]] = None,
-    oldest_first: bool = False,  # New parameter to control sort order
+    filter_fn: Optional[Callable[[LogEntry], bool]] = None
 ) -> List[Dict[str, Any]]:
     """Retrieve logs from memory with optional filtering
 
     Args:
-        max_entries: Maximum number of entries to return (newest first by default)
+        from_entry: Start from a specific log entry ID
+        max_entries: Maximum number of entries to return (oldest first by default)
         min_level: Minimum log level to include
         logger_name: Filter logs to a specific logger
         filter_fn: Custom filter function taking a LogEntry and returning boolean
-        oldest_first: If True, return oldest logs first instead of newest first
 
     Returns:
         List of log entries as dictionaries
@@ -265,27 +266,16 @@ def get_logs(
     # Create a copy of the logs to avoid modifying the original
     logs = list(_LOG_STORAGE)
 
-    # Apply filters
-    if min_level is not None:
-        min_level_value = SimpleLogger.LEVEL_VALUES.get(min_level, 0)
-        logs = [
-            log
-            for log in logs
-            if SimpleLogger.LEVEL_VALUES.get(log.level, 0) >= min_level_value
-        ]
-
-    if logger_name is not None:
-        logs = [log for log in logs if log.logger_name == logger_name]
-
-    if filter_fn is not None:
-        logs = [log for log in logs if filter_fn(log)]
-
-    # Sort by sequential counter according to id
-    logs.sort(key=lambda log: log.id, reverse=not oldest_first)
+    logs = [
+        log for log in logs
+        if (from_entry is None or log.id >= from_entry)
+        and (min_level is None or LEVEL_VALUES.get(log.level, 0) >= LEVEL_VALUES.get(min_level, 0))
+        and (logger_name is None or log.logger_name == logger_name)
+        and (filter_fn is None or filter_fn(log))
+    ]
 
     # Limit the number of entries if requested
-    if max_entries is not None:
-        logs = logs[:max_entries]
+    logs = logs[:max_entries] if max_entries is not None else logs
 
     # Convert to dictionaries for easier serialization
     return [log.to_dict() for log in logs]
