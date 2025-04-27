@@ -2,6 +2,14 @@
 set -e
 set -x
 
+# Build and install the kybra-simple-logging package from source
+echo "Building and installing kybra-simple-logging wheel..."
+cd /app/kybra-simple-logging-source
+python -m pip install --upgrade pip wheel build
+python -m build --wheel
+pip install dist/*.whl
+cd /app
+
 # Start dfx in the background
 echo "Starting dfx..."
 dfx start --background --clean > /tmp/log.txt 2>&1
@@ -71,10 +79,6 @@ if [ "$LOG_COUNT" -lt 1 ]; then
 else
   echo " get_canister_logs query test passed!"
 fi
-
-# Install the package to test the CLI tool
-echo "Installing kybra-simple-logging package with CLI tool..."
-cd src && pip install . && cd ..
 
 # Test the CLI tool
 echo "Testing CLI tool..."
