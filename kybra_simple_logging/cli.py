@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import time
+import select
 from datetime import datetime
 
 
@@ -42,20 +43,49 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_logs(canister_id, tail=None, level=None, network=None):
-    # Build the query arguments
+def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
+    """Query log entries from a canister
+    
+    Args:
+        canister_id: ID of the canister to query
+        tail: Maximum number of entries to return (optional)
+        level: Minimum log level to include (optional)
+        network: Network to query (optional)
+        from_entry: Start retrieving logs from this ID (optional)
+        
+    Returns:
+        List of log entries as dictionaries
+    
+    Note:
+        The parameters are passed to the canister in the following order:
+        1. from_entry
+        2. max_entries (tail)
+        3. min_level (level)
+        4. logger_name (always null in CLI)
+    """
+    # Build the query arguments in the correct order as expected by the canister API
     args = []
+    
+    # 1. from_entry parameter
+    if from_entry is not None:
+        args.append(f"(opt {from_entry})")
+    else:
+        args.append("null")
+    
+    # 2. tail/max_entries parameter
     if tail is not None:
         args.append(f"(opt {tail})")
     else:
         args.append("null")
-
+    
+    # 3. level/min_level parameter
     if level is not None:
         args.append(f'(opt "{level}")')
     else:
         args.append("null")
-
-    args.append("null")  # logger_name is null
+    
+    # 4. logger_name parameter (always null in our CLI)
+    args.append("null")
 
     query_args = ", ".join(args)
 
@@ -120,19 +150,49 @@ def main():
     if args.follow:
         # Follow mode
         try:
+            last_poll_time = 0
+            last_log_id = 0  # Track the ID of the last log we've seen
+            all_displayed_logs = []  # Keep track of all logs we've displayed
+            first_poll = True  # Flag for first poll
+            
             while True:
-                logs = get_logs(args.canister_id, args.tail, args.level, network)
-
-                # Clear screen and print logs
-                print("\033c", end="")
-                for log in logs:
-                    print(format_log(log))
-
-                network_display = f" on {network}" if network else ""
-                print(
-                    f"\nPolling logs from {args.canister_id}{network_display}... (Ctrl+C to quit)"
-                )
-                time.sleep(args.interval)
+                current_time = time.time()
+                force_refresh = False
+                
+                # Check if it's time to poll or if there's input available
+                if current_time - last_poll_time >= args.interval or select.select([sys.stdin], [], [], 0)[0]:
+                    # If there's input, consume it and force a full refresh
+                    if select.select([sys.stdin], [], [], 0)[0]:
+                        input()
+                        force_refresh = True
+                    
+                    # On first poll or manual refresh, get all logs
+                    if first_poll or force_refresh:
+                        logs = get_logs(args.canister_id, args.tail, args.level, network)
+                        all_displayed_logs = logs
+                        first_poll = False
+                    else:
+                        # Get only new logs using from_entry
+                        logs = get_logs(args.canister_id, None, args.level, network, from_entry=last_log_id + 1)
+                        all_displayed_logs.extend(logs)
+                    
+                    last_poll_time = current_time
+                    
+                    # Update the last log ID if we have logs
+                    if logs:
+                        last_log_id = max(int(log.get("id", 0)) for log in logs)
+                    
+                    # Trim if we have a tail limit
+                    if args.tail is not None and len(all_displayed_logs) > args.tail:
+                        all_displayed_logs = all_displayed_logs[-args.tail:]
+                    
+                    # Clear screen and print all logs
+                    print("\033c", end="")
+                    for log in all_displayed_logs:
+                        print(format_log(log))
+                
+                # Small sleep to prevent CPU spinning
+                time.sleep(0.1)
         except KeyboardInterrupt:
             print("\nExiting log follower")
     else:
