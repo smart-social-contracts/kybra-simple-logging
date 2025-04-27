@@ -24,7 +24,7 @@ from ._handler import (  # Function to check memory logging status
 try:
     from ._handler import PublicLogEntry  # Public log entry type for canister queries
     from ._handler import (  # Query function to expose logs via canister query
-        get_canister_logs_internal,
+        get_canister_logs,
     )
 except ImportError:
     # If kybra isn't available, these imports will fail

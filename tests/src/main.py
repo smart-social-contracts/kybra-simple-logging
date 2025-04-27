@@ -32,7 +32,7 @@ def run_memory_logs_test() -> int:
 
 from kybra import Opt, Record, Vec, ic, nat, query, update  # noqa: E402
 
-from kybra_simple_logging import get_canister_logs_internal  # noqa: E402
+from kybra_simple_logging import get_canister_logs as _get_canister_logs  # noqa: E402
 
 
 # Define the PublicLogEntry class directly in the test canister
@@ -54,7 +54,7 @@ def get_canister_logs(
     Re-export the get_canister_logs query function from the library
     This makes it accessible as a query method on the test canister
     """
-    logs = get_canister_logs_internal(
+    logs = _get_canister_logs(
         max_entries=max_entries, min_level=min_level, logger_name=logger_name
     )
 
