@@ -74,7 +74,7 @@ def get_logs(canister_id, tail=None, level=None, network=None, from_entry=None):
 
     # 2. tail/max_entries parameter
     if tail is not None:
-        args.append(f"(opt {tail})")
+        args.append(f'(opt "{tail}")')
     else:
         args.append("null")
 
@@ -190,7 +190,6 @@ def main():
 
                 last_poll_time = current_time
 
-                ## Print all logs
                 for log in logs:
                     print(format_log(log), flush=True)
 
