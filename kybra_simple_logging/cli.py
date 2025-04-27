@@ -122,6 +122,7 @@ def format_log(log_entry):
     level = log_entry.get("level", "UNKNOWN")
     logger = log_entry.get("logger_name", "unknown")
     message = log_entry.get("message", "")
+    id = log_entry.get("id", "unknown")
 
     # Add colors based on log level
     level_colors = {
@@ -134,10 +135,14 @@ def format_log(log_entry):
     reset = "\033[0m"
     color = level_colors.get(level, "")
 
-    return f"{timestamp} {color}[{level}]{reset} [{logger}] {message}"
+    return f"{timestamp} [{id}] {color}[{level}]{reset} [{logger}] {message}"
 
 
 def main():
+    # Set stdout to line buffering mode to ensure timely output when piped
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, line_buffering=True)
+    
     args = parse_args()
 
     # Determine network option
@@ -147,59 +152,44 @@ def main():
     elif args.network:
         network = args.network
 
-    if args.follow:
-        # Follow mode
-        try:
-            last_poll_time = 0
-            last_log_id = 0  # Track the ID of the last log we've seen
-            all_displayed_logs = []  # Keep track of all logs we've displayed
-            first_poll = True  # Flag for first poll
-            
-            while True:
-                current_time = time.time()
-                force_refresh = False
-                
-                # Check if it's time to poll or if there's input available
-                if current_time - last_poll_time >= args.interval or select.select([sys.stdin], [], [], 0)[0]:
-                    # If there's input, consume it and force a full refresh
-                    if select.select([sys.stdin], [], [], 0)[0]:
-                        input()
-                        force_refresh = True
-                    
-                    # On first poll or manual refresh, get all logs
-                    if first_poll or force_refresh:
-                        logs = get_logs(args.canister_id, args.tail, args.level, network)
-                        all_displayed_logs = logs
-                        first_poll = False
-                    else:
-                        # Get only new logs using from_entry
-                        logs = get_logs(args.canister_id, None, args.level, network, from_entry=last_log_id + 1)
-                        all_displayed_logs.extend(logs)
-                    
-                    last_poll_time = current_time
-                    
-                    # Update the last log ID if we have logs
-                    if logs:
-                        last_log_id = max(int(log.get("id", 0)) for log in logs)
-                    
-                    # Trim if we have a tail limit
-                    if args.tail is not None and len(all_displayed_logs) > args.tail:
-                        all_displayed_logs = all_displayed_logs[-args.tail:]
-                    
-                    # Clear screen and print all logs
-                    print("\033c", end="")
-                    for log in all_displayed_logs:
-                        print(format_log(log))
-                
-                # Small sleep to prevent CPU spinning
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            print("\nExiting log follower")
-    else:
+    if not args.follow:
         # One-time query
         logs = get_logs(args.canister_id, args.tail, args.level, network)
         for log in logs:
-            print(format_log(log))
+            print(format_log(log), flush=True)
+        return
+
+    # Follow mode
+    try:
+        last_poll_time = 0
+        last_log_id = 0
+        first_poll = True
+        
+        while True:
+            current_time = time.time()
+            if first_poll or current_time - last_poll_time >= args.interval or select.select([sys.stdin], [], [], 0)[0]:
+                if select.select([sys.stdin], [], [], 0)[0]:
+                    input()
+
+                if first_poll:
+                    logs = get_logs(args.canister_id, args.tail, args.level, network)
+                    first_poll = False
+                else:
+                    logs = get_logs(args.canister_id, None, args.level, network, from_entry=last_log_id + 1)
+
+                last_poll_time = current_time
+                
+                ## Print all logs
+                for log in logs:
+                   print(format_log(log), flush=True)
+                        
+                # Update the last log ID if we have logs
+                if logs:
+                    last_log_id = max(int(log.get("id", 0)) for log in logs)
+            
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("\nExiting log follower")
 
 
 if __name__ == "__main__":

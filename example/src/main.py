@@ -13,9 +13,7 @@ def heartbeat_() -> void:
     logger.critical("Heartbeat")
 
 
-
 # ##### Import Kybra and the internal function #####
-
 from kybra import Opt, Record, Vec, ic, nat, query, update  # noqa: E402
 
 from kybra_simple_logging import get_canister_logs as _get_canister_logs  # noqa: E402
@@ -32,6 +30,7 @@ class PublicLogEntry(Record):
 
 @query
 def get_canister_logs(
+    from_entry: Opt[int] = None,
     max_entries: Opt[int] = None,
     min_level: Opt[str] = None,
     logger_name: Opt[str] = None,
@@ -41,7 +40,10 @@ def get_canister_logs(
     This makes it accessible as a query method on the test canister
     """
     logs = _get_canister_logs(
-        max_entries=max_entries, min_level=min_level, logger_name=logger_name
+        from_entry=from_entry,
+        max_entries=max_entries,
+        min_level=min_level,
+        logger_name=logger_name
     )
 
     # Convert the logs to our local PublicLogEntry type

@@ -275,8 +275,8 @@ def get_logs(
         and (logger_name is None or log.logger_name == logger_name)
     ]
 
-    # Limit the number of entries if requested
-    logs = logs[:max_entries] if max_entries is not None else logs
+    # Limit the number of entries if requested - return the LAST entries (most recent)
+    logs = logs[-max_entries:] if max_entries is not None else logs
 
     # Convert to dictionaries for easier serialization
     return [log.to_dict() for log in logs]
