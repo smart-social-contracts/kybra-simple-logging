@@ -4,11 +4,9 @@ import os
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-# CLI documentation is now included in the main README.md
-
 setup(
     name="kybra_simple_logging",
-    version="0.1.4",  # Increment version for new CLI feature
+    version="0.1.4",
     author="Smart Social Contracts",
     author_email="smartsocialcontracts@gmail.com",
     description="A robust logging system for Internet Computer canisters built with Kybra",
@@ -18,7 +16,7 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "kslog=kybra_simple_logging.cli:main",  # Register the CLI command with new name
+            "kslog=kybra_simple_logging.cli:main",
         ],
     },
     classifiers=[

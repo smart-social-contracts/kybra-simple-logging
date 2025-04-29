@@ -11,6 +11,7 @@ A simple logging system for the [Internet Computer](https://internetcomputer.org
 
 ## Features
 
+- CLI tool for querying logs directly from canisters to your local machine (including in semi-real time with `--follow`)
 - Works seamlessly in both Internet Computer and non-IC environments
 - Avoids using Python's standard logging module (which has compatibility issues in the IC environment)
 - Named loggers with `get_logger()` function similar to Python's standard library
@@ -127,11 +128,11 @@ python -m kybra install-dfx-extension
 # Install development dependencies
 pip install -r requirements-dev.txt
 
-# Run tests
-cd tests && ./run_test.sh
-
 # Run linters
 ./run_linters.sh
+
+# Run tests
+cd tests && ./run_test.sh
 ```
 
 ## Contributing
