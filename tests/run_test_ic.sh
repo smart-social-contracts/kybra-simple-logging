@@ -7,11 +7,13 @@ IMAGE_ADDRESS="ghcr.io/smart-social-contracts/icp-dev-env:latest"
 echo "Running tests..."
 docker run --rm \
     -v "${PWD}/src:/app/src" \
-    -v "${PWD}/../kybra_simple_logging:/app/src/kybra_simple_logging" \
     -v "${PWD}/dfx.json:/app/dfx.json" \
     -v "${PWD}/entrypoint.sh:/app/entrypoint.sh" \
-    --entrypoint "/app/entrypoint.sh" \
-    $IMAGE_ADDRESS || {
+    -v "${PWD}/..:/app/kybra-simple-logging-source" \
+    -v "${PWD}/example:/app/example" \
+    --entrypoint "bash" \
+    $IMAGE_ADDRESS \
+    -c "cd /app && ./entrypoint.sh" || {
     echo "❌ Tests failed"
     exit 1
 }

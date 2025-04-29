@@ -1,31 +1,16 @@
-from kybra import ic, query, update
+from kybra import ic, query, heartbeat, void
 
-# Import and expose all the test functions
-from tests import test_functions, test_memory_logs, test_vars
-
-
-@query
-def greet() -> str:
-    """Basic test function"""
-    return "Hello from the logging test canister!"
+from kybra_simple_logging import get_logger
 
 
-@update
-def run_test(function_name: str) -> int:
-    ic.print(f"Running test_{function_name}...")
-    return test_functions.run_test(function_name)
-
-
-@update
-def run_var_test() -> int:
-    ic.print("Running variable storage tests...")
-    return test_vars.run_all_tests()
-
-
-@update
-def run_memory_logs_test() -> int:
-    ic.print("Running memory logging tests...")
-    return test_memory_logs.run_tests()
+@heartbeat
+def heartbeat_() -> void:
+    logger = get_logger("heartbeat")
+    logger.info("Heartbeat")
+    logger.debug("Heartbeat")
+    logger.warning("Heartbeat")
+    logger.error("Heartbeat")
+    logger.critical("Heartbeat")
 
 
 # ##### Import Kybra and the internal function #####

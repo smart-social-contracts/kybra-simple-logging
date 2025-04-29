@@ -2,6 +2,14 @@
 set -e
 set -x
 
+# Build and install the kybra-simple-logging package from source
+echo "Building and installing kybra-simple-logging wheel..."
+cd /app/kybra-simple-logging-source
+python -m pip install --upgrade pip wheel build
+python -m build --wheel
+pip install dist/*.whl
+cd /app
+
 # Start dfx in the background
 echo "Starting dfx..."
 dfx start --background --clean > /tmp/log.txt 2>&1
@@ -54,12 +62,59 @@ else
   echo "run_memory_logs_test test passed!"
 fi
 
+# Test the canister query function directly
+echo "Testing get_canister_logs query function..."
+# Generate some logs first
+dfx canister call test run_test basic_logging > /dev/null
+
+# Call the query function directly
+QUERY_RESULT=$(dfx canister call test get_canister_logs)
+LOG_COUNT=$(echo "$QUERY_RESULT" | grep -o "record" | wc -l)
+
+echo "Retrieved $LOG_COUNT log entries via query function"
+if [ "$LOG_COUNT" -lt 1 ]; then
+  echo " Error: get_canister_logs query returned no logs"
+  dfx stop
+  exit 1
+else
+  echo " get_canister_logs query test passed!"
+fi
+
+# Test the CLI tool
+echo "Testing CLI tool..."
+
+# Create some logs for testing
+dfx canister call test run_test basic_logging > /dev/null
+CANISTER_ID=$(dfx canister id test)
+
+# Run simple test to fetch logs using CLI
+echo "Testing CLI basic functionality..."
+kslog $CANISTER_ID --tail 5 > /tmp/cli_test_output.txt
+
+# Check the output
+LOG_COUNT=$(cat /tmp/cli_test_output.txt | wc -l)
+if [ "$LOG_COUNT" -lt 1 ]; then
+  echo " Error: CLI returned no logs"
+  dfx stop
+  exit 1
+else
+  echo " CLI basic test passed!"
+fi
+
+# Clean up test output
+rm -f /tmp/cli_test_output.txt
+rm -f /tmp/cli_level_test.txt
+
+# Deploy the example canister
+echo "Deploying example canister..."
+cd /app/kybra-simple-logging-source/example
+dfx deploy
+echo "Example canister deployed successfully!"
+sleep 5
+dfx canister logs kslog_example  # Show example canister logs
+cd /app
+
 echo "Stopping dfx..."
 dfx stop
-
-# Clean up log files
-echo "Cleaning up log files..."
-rm -f /tmp/log.txt
-rm -f src/.test_logs.json
 
 echo "All done!"

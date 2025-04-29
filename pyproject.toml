@@ -30,5 +30,8 @@ Homepage = "https://github.com/smart-social-contracts/kybra-simple-logging"
 Repository = "https://github.com/smart-social-contracts/kybra-simple-logging.git"
 Issues = "https://github.com/smart-social-contracts/kybra-simple-logging/issues"
 
+[project.scripts]
+kslog = "kybra_simple_logging.cli:main"
+
 [tool.setuptools]
 packages = ["kybra_simple_logging"]

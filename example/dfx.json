@@ -1,0 +1,16 @@
+{
+  "canisters": {
+    "kslog_example": {
+      "type": "kybra",
+      "main": "src/main.py"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
